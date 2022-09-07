@@ -24,17 +24,17 @@ void inicializar(float probabilidades[3][3]) {
 }
 
 void calcularProbabilidades(float probabilidades[3][3]) {
-    FILE * arch = fopen("simbolos.txt", "r+");
-    int ocurrencias[3][3];
+    FILE * arch = fopen("text.txt", "r");
+    float ocurrencias[3][3];
 
-    for (int i; i < 3; i++) {
-        for (int k; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
+        for (int k = 0; i < 3; i++) {
             ocurrencias[i][k] = 0;
         }
     }
 
     char prev, act;
-    int cont = 2;
+    int cont = 1;
     fscanf(arch, "%c", &prev);
     fscanf(arch, "%c", &act);
     while (!feof(arch)) {
@@ -44,9 +44,19 @@ void calcularProbabilidades(float probabilidades[3][3]) {
         cont++;
     }
 
-    for (int i; i < 3; i++) {
-        for (int k; i < 3; i++) {
-            probabilidades[i][k] = ocurrencias[i][k] / cont;
+    printf("Caracteres: %d\n", cont);
+    printf("Ocurrencias:\n");
+    printf("\tA\tB\tC\n");
+
+    printf("A\t%0.0f\t%0.0f\t%0.0f\n", ocurrencias[0][0], ocurrencias[0][1], ocurrencias[0][2]);
+    printf("B\t%0.0f\t%0.0f\t%0.0f\n", ocurrencias[1][0], ocurrencias[1][1], ocurrencias[1][2]);
+    printf("C\t%0.0f\t%0.0f\t%0.0f\n", ocurrencias[2][0], ocurrencias[2][1], ocurrencias[2][2]);
+    printf("--------------:\n");
+
+
+    for (int i = 0; i < 3; i++) {
+        for (int k = 0; k < 3; k++) {
+            probabilidades[i][k] = ocurrencias[i][k] / (float) cont;
         }
     }
 
@@ -55,7 +65,7 @@ void calcularProbabilidades(float probabilidades[3][3]) {
 
 void mostrarMatriz(float probablidades[3][3]) {
     printf("Probabilidades:\n");
-    printf("\tA\tB\tC");
+    printf("\tA\tB\tC\n");
 
     printf("A\t%0.2f\t%0.2f\t%0.2f\n", probablidades[0][0], probablidades[0][1], probablidades[0][2]);
     printf("B\t%0.2f\t%0.2f\t%0.2f\n", probablidades[1][0], probablidades[1][1], probablidades[1][2]);
