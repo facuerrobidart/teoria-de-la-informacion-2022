@@ -26,6 +26,7 @@ void inicializar(float probabilidades[3][3]) {
 void calcularProbabilidades(float probabilidades[3][3]) {
     FILE * arch = fopen("text.txt", "r");
     float ocurrencias[3][3];
+    int cont[3] = {0, 0, 0};
 
     for (int i = 0; i < 3; i++) {
         for (int k = 0; i < 3; i++) {
@@ -34,17 +35,19 @@ void calcularProbabilidades(float probabilidades[3][3]) {
     }
 
     char prev, act;
-    int cont = 1;
     fscanf(arch, "%c", &prev);
     fscanf(arch, "%c", &act);
+    cont[act-'A'] = 1;
     while (!feof(arch)) {
         ocurrencias[prev-'A'][act-'A']++;
         prev = act;
         fscanf(arch, "%c", &act);
-        cont++;
+        cont[act-'A']++;
     }
 
-    printf("Caracteres: %d\n", cont);
+    printf("Cantidad de veces que aparece cada caracter:\n");
+    for(int i = 0; i < 3; i++)
+        printf("%c: %d\n",i+'A',cont[i]);
     printf("Ocurrencias:\n");
     printf("\tA\tB\tC\n");
 
@@ -56,7 +59,7 @@ void calcularProbabilidades(float probabilidades[3][3]) {
 
     for (int i = 0; i < 3; i++) {
         for (int k = 0; k < 3; k++) {
-            probabilidades[i][k] = ocurrencias[i][k] / (float) cont;
+            probabilidades[i][k] = ocurrencias[i][k] / (float) cont[k];
         }
     }
 
