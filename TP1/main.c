@@ -67,7 +67,7 @@ void calcularProbabilidades(float probabilidades[3][3]) {
 }
 
 void mostrarMatriz(float probablidades[3][3]) {
-    printf("Probabilidades:\n");
+    printf("Matriz de pasaje:\n");
     printf("\tA\tB\tC\n");
 
     printf("A\t%0.2f\t%0.2f\t%0.2f\n", probablidades[0][0], probablidades[0][1], probablidades[0][2]);
