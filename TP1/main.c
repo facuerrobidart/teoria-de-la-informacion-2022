@@ -39,7 +39,7 @@ void calcularProbabilidades(float probabilidades[3][3]) {
     fscanf(arch, "%c", &act);
     cont[act-'A'] = 1;
     while (!feof(arch)) {
-        ocurrencias[prev-'A'][act-'A']++;
+        ocurrencias[act-'A'][prev-'A']++;
         prev = act;
         fscanf(arch, "%c", &act);
         cont[act-'A']++;
