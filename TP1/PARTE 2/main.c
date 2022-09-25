@@ -15,7 +15,7 @@ void cincoSimbolos();
 void sieteSimbolos();
 void leerArchivo();
 void buscaYCuenta(nodo lista[], char *pal, int *tamLista);
-void mostrarResultados(nodo lista[], int tamPalabra, int tamLista, int totalPalabras);
+void mostrarResultados(nodo lista[], int tamPalabra, int tamLista, int totalPalabras,float* entropia);
 void iniciaLista(nodo lista[]);
 void calculaKraft(int tamLista, int tamPalabra);
 
@@ -36,6 +36,14 @@ void sieteSimbolos() {
     leerArchivo(7);
 }
 
+float rendimiento(float entropia, float longitudMedia) {
+    return entropia / longitudMedia;
+}
+float reduncancia(float entropia, float longitudMedia) {
+    return 1 - rendimiento(entropia, longitudMedia);
+}
+
+
 void leerArchivo(int tamPalabra) {
     FILE * arch = fopen("text.txt", "r");
     char pal[8];
@@ -43,7 +51,7 @@ void leerArchivo(int tamPalabra) {
     int tamLista = 0;
     int contPalabras = 0;
     iniciaLista(lista);
-
+    double entropia=0,redundancia_=0,rendimiento_=0;
     while (!feof(arch)) {
         fgets(pal, (tamPalabra + 1) * sizeof(char), arch);
         if (strlen(pal) == tamPalabra) {
@@ -52,8 +60,10 @@ void leerArchivo(int tamPalabra) {
         }
     }
 
-    mostrarResultados(lista, tamPalabra, tamLista, contPalabras);
-
+    mostrarResultados(lista, tamPalabra, tamLista, contPalabras,&entropia);
+    redundancia_=reduncancia(entropia,tamPalabra);
+    rendimiento_=rendimiento(entropia,tamPalabra);
+    printf("redundancia: %f , rendimiento:  %f",redundancia_,rendimiento_);
     fclose(arch);
 }
 
@@ -85,14 +95,17 @@ void buscaYCuenta(nodo lista[], char *pal, int *tamLista){
     }
 }
 
-void mostrarResultados(nodo lista[], int tamPalabra, int tamLista, int cantPalabras) {
+void mostrarResultados(nodo lista[], int tamPalabra, int tamLista, int cantPalabras,float * entropia) {
     double cantidadDeInformacion = 0;
+
     for (int i = 0; i < tamLista - 1; i++) {
             lista[i].prob = (double) lista[i].ocurrencia / cantPalabras;
             cantidadDeInformacion += log2(1/lista[i].prob);
+            (*entropia)+= lista[i].prob* log2(1/lista[i].prob);
             //printf("Palabra: %s Ocurrencias: %4d Probalilidad: %0.4f \n", lista[i].pal, lista[i].ocurrencia, lista[i].prob);
     }
 
+    printf("cantidad de info:  %f \n",cantidadDeInformacion);
     calculaKraft(tamLista, tamPalabra);
 }
 
@@ -111,11 +124,4 @@ void calculaKraft(int tamLista, int tamPalabra) {
     else {
         printf("El codigo de tamano %d NO cumple la inecuacion de Kraft/MacMillan (es compacto)\n", tamPalabra);
     }
-}
-
-float rendimiento(float entropia, float longitudMedia) {
-    return entropia / longitudMedia;
-}
-float reduncancia(float entropia, float longitudMedia) {
-    return 1 - rendimiento(entropia, longitudMedia);
 }
