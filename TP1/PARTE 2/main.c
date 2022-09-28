@@ -177,24 +177,25 @@ int encontrarMinimo(nodoHuffman *bosque[],int tamLista,int excluir) {
     int smaller;
     int i = 0;
 
-    while ((bosque[i]->sumado != 0) && (i < tamLista))
+    while ((bosque[i]->sumado == 1) && (i < tamLista)) {
         i++;
+    }
 
-    smaller=i;
+    smaller = i;
 
     if (i == excluir){
         i++;
-        while ((bosque[i]->sumado != 0) && (i < tamLista))
+        while ( (i < tamLista) && (bosque[i]->sumado != 0))
             i++;
         smaller=i;
     }
 
-    for (i=smaller;i< tamLista;i++){
+    for (i=smaller;i < tamLista;i++){
         if ((i != excluir) && (bosque[i]->sumado == 0)) {
             if ((bosque[i]->ocur < bosque[smaller]->ocur)) {
                 smaller = i;
             }
-            if ((bosque[i]->ocur == bosque[smaller]->ocur) && (strcmp(bosque[i]->pal, "") != 0)) {
+            if ((bosque[i]->ocur == bosque[smaller]->ocur) && (strcmp(bosque[i]->pal, "") != 0) && (strcmp(bosque[smaller]->pal, "") == 0)) {
                 smaller = i;
             }
         }
