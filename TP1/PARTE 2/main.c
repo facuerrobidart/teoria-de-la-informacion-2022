@@ -128,7 +128,7 @@ void calculaKraft(int tamLista, int tamPalabra) {
     double kraft = 0;
     for (int k = 0; k< tamLista; k++){
         kraft += pow(3, (-1) * tamPalabra);
-        printf("Kraft: %0.4f \n", kraft);
+        //printf("Kraft: %0.4f \n", kraft);
     }
 
     printf("Cantidad de palabras: %d \n", tamLista);
@@ -145,7 +145,7 @@ void recorrerInOrden(nodoHuffman *raiz) {
     if (raiz != NULL) {
         recorrerInOrden(raiz->izq);
         if (raiz->izq == NULL && raiz->der == NULL) {
-            printf("PALABRA: %s OCURRENCIAS: %d\n", raiz->pal, raiz->ocur);
+            printf("PALABRA: %s OCURRENCIAS: %d\n", raiz->pal, raiz->ocur); //si es hoja, escribo la palabra y la ocurrencia
         }
         recorrerInOrden(raiz->der);
     }
@@ -173,29 +173,31 @@ void armarDiccionario(nodoHuffman *raiz, nodoDiccionario diccionario[], char cod
     codigo[strlen(codigo)] = '\0'; //elimina el caracter que recien agregue
 }
 
-int encontrarMinimo(nodoHuffman **bosque, int tamLista, int excluir) {
+int encontrarMinimo(nodoHuffman *bosque[],int tamLista,int excluir) {
     int smaller;
     int i = 0;
 
-    while (bosque[i]->sumado == 1)
+    while ((bosque[i]->sumado != 0) && (i < tamLista))
         i++;
 
     smaller=i;
 
     if (i == excluir){
         i++;
-        while (bosque[i]->sumado==1)
+        while ((bosque[i]->sumado != 0) && (i < tamLista))
             i++;
         smaller=i;
     }
 
-    for (i=0;i<tamLista;i++){
-        if (bosque[i]->sumado == 1)
-            continue;
-        if (i==excluir)
-            continue;
-        if (bosque[i]->ocur<bosque[smaller]->ocur)
-            smaller = i;
+    for (i=smaller;i< tamLista;i++){
+        if ((i != excluir) && (bosque[i]->sumado == 0)) {
+            if ((bosque[i]->ocur < bosque[smaller]->ocur)) {
+                smaller = i;
+            }
+            if ((bosque[i]->ocur == bosque[smaller]->ocur) && (strcmp(bosque[i]->pal, "") != 0)) {
+                smaller = i;
+            }
+        }
     }
 
     return smaller;
@@ -204,42 +206,42 @@ int encontrarMinimo(nodoHuffman **bosque, int tamLista, int excluir) {
 // La idea básica es armar un array de punteros a subarboles y agrupar los que tengan menor
 // probabilidad de ocurrencia hasta que quede uno solo, que será el arbol de Huffman
 void armarArbol(nodoProb lista[], int tamLista, nodoHuffman **arbol) {
-    nodoHuffman *aux;
-    int i = 0, cantSubArboles = tamLista;
+    nodoHuffman *aux1;
+    nodoHuffman *bosque[tamLista];
+    int cantSubArboles;
     int menor1, menor2;
 
-    while (i < tamLista) {
-        aux = (nodoHuffman *) malloc(sizeof(nodoHuffman));
-        strcpy(aux->pal, lista[i].pal);
-        aux->ocur = lista[i].ocurrencia;
-        aux->izq = NULL;
-        aux->der = NULL;
-        aux->sumado = 0;
-        arbol[i] = aux;
-        i++;
+    for (int i=0;i<tamLista;i++){
+        aux1 = (nodoHuffman *) malloc(sizeof(nodoHuffman));
+        strcpy(aux1->pal, lista[i].pal);
+        aux1->ocur = lista[i].ocurrencia;
+        aux1->izq = NULL;
+        aux1->der = NULL;
+        aux1->sumado = 0;
+        bosque[i] = aux1;
     }
 
+
+    cantSubArboles = tamLista;
     while (cantSubArboles > 1) {
-        menor1 = encontrarMinimo(arbol, tamLista, -1);
-        menor2 = encontrarMinimo(arbol, tamLista, menor1);
-        aux = arbol[menor1];
-        arbol[menor1] = malloc(sizeof(nodoHuffman));
+        menor1 = encontrarMinimo(bosque, tamLista,-1);
+        menor2 = encontrarMinimo(bosque, tamLista,menor1);
+        aux1 = bosque[menor1];
+        bosque[menor1] = (nodoHuffman*) malloc(sizeof(nodoHuffman));
 
-        strcpy(arbol[menor1]->pal, "");
-        arbol[menor1]->ocur = aux->ocur + arbol[menor2]->ocur;
-        arbol[menor1]->izq = arbol[menor2];
-        arbol[menor1]->der = aux;
-        arbol[menor1]->sumado = 0;
-        arbol[menor2]->sumado = 1;
-
+        strcpy(bosque[menor1]->pal, "");
+        bosque[menor1]->ocur = aux1->ocur + bosque[menor2]->ocur;
+        bosque[menor1]->der = bosque[menor2];
+        bosque[menor1]->izq = aux1;
+        bosque[menor2]->sumado = 1;
         cantSubArboles--;
     }
 
-    *arbol = arbol[menor1];
+    *arbol = bosque[menor1];
 }
 
 void ejecutaHuffman(nodoProb lista[], int tamLista) {
-    nodoHuffman *raiz = NULL;
+    nodoHuffman *raiz;
     armarArbol(lista, tamLista, &raiz);
     recorrerInOrden(raiz);
 }
