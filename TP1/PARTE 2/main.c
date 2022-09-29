@@ -13,7 +13,8 @@ typedef struct nodoProb
 
 typedef struct nodoDiccionario {
     char pal[8];
-    char cod[8];
+    char cod[20];
+    int ocurr;
 } nodoDiccionario;
 
 #define ALT_MAXIMA 50
@@ -41,7 +42,7 @@ void calculaKraft(int tamLista, int tamPalabra);
 void ejecutaHuffman(nodoProb lista[], int tamLista);
 
 int main(){
-    sieteSimbolos();
+    cincoSimbolos();
     return 0;
 }
 
@@ -157,6 +158,14 @@ void mostrarArray(int arr[], int n) {
     printf("\n");
 }
 
+void insertarEnDiccionario(nodoDiccionario *diccionario, int arr[], int n) {
+    int i;
+
+    for (i = 0; i < n; ++i) {
+        diccionario->cod[i] = '0' + arr[i];
+    }
+    diccionario->cod[n] = '\0';
+}
 
 
 // Crea un nodo del arbol de Huffman
@@ -279,18 +288,50 @@ struct NodoHuff *construirArbolDeHuffman(nodoProb item[], int size) {
 
 
 //Recorre el Arbol de Huffman y arma los codigos en arr
-void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope) {
+void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope, nodoDiccionario diccionario[], int *contador) {
     if (raiz->izq) {
         arr[tope] = 0;
-        escribirCodigosHuffman(raiz->izq, arr, tope + 1);
+        escribirCodigosHuffman(raiz->izq, arr, tope + 1, diccionario, contador);
     }
     if (esHoja(raiz)) {
         printf("  %s   | ", raiz->pal);
+        strcpy(diccionario[*contador].pal, raiz->pal);
+        insertarEnDiccionario(&diccionario[*contador], arr, tope);
+        diccionario[*contador].ocurr = raiz->ocur;
+        (*contador)++;
         mostrarArray(arr, tope);
     }
     if (raiz->der) {
         arr[tope] = 1;
-        escribirCodigosHuffman(raiz->der, arr, tope + 1);
+        escribirCodigosHuffman(raiz->der, arr, tope + 1, diccionario, contador);
+    }
+}
+
+void ordenaDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
+    nodoDiccionario aux;
+
+    printf("-------------------------------------------------\n");
+    printf("Ordenando Diccionario......\n");
+    printf("-------------------------------------------------\n");
+
+    for (int i = 0; i < tamDiccionario; i++) {
+        for (int j = i + 1; j < tamDiccionario; j++) {
+            if (diccionario[i].ocurr < diccionario[j].ocurr) {
+                aux = diccionario[i];
+                diccionario[i] = diccionario[j];
+                diccionario[j] = aux;
+            }
+        }
+    }
+
+}
+
+void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
+
+    printf("-------------------------------------------------\n");
+    printf("Diccionario:\n");
+    for(int i = 0; i < tamDiccionario; i++) {
+        printf("PALABRA: %8s CODIGO: %15s OCURRENCIA: %6d\n", diccionario[i].pal, diccionario[i].cod, diccionario[i].ocurr);
     }
 }
 
@@ -298,6 +339,10 @@ void ejecutaHuffman(nodoProb lista[], int tamLista) {
     struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
 
     int arr[ALT_MAXIMA], top = 0;
+    nodoDiccionario diccionario[tamLista];
+    int contador = 0;
 
-    escribirCodigosHuffman(root, arr, top);
+    escribirCodigosHuffman(root, arr, top, diccionario, &contador);
+    ordenaDiccionario(diccionario, tamLista);
+    mostrarDiccionario(diccionario, tamLista);
 }
