@@ -10,18 +10,25 @@ typedef struct nodoProb
     double prob;
 } nodoProb;
 
-typedef struct nodoHuffman {
-    char pal[8];
-    int ocur;
-    int sumado;
-    struct nodoHuffman *izq;
-    struct nodoHuffman *der;
-} nodoHuffman;
 
 typedef struct nodoDiccionario {
     char pal[8];
     char cod[8];
 } nodoDiccionario;
+
+#define ALT_MAXIMA 50
+
+struct NodoHuff {
+    char pal[8];
+    unsigned ocur;
+    struct NodoHuff *izq, *der;
+};
+
+struct TSubArbol {
+    unsigned tamano;
+    unsigned capacidad;
+    struct NodoHuff **array;
+};
 
 void tresSimbolos();
 void cincoSimbolos();
@@ -141,108 +148,156 @@ void calculaKraft(int tamLista, int tamPalabra) {
     }
 }
 
-void recorrerInOrden(nodoHuffman *raiz) {
-    if (raiz != NULL) {
-        recorrerInOrden(raiz->izq);
-        if (raiz->izq == NULL && raiz->der == NULL) {
-            printf("PALABRA: %s OCURRENCIAS: %d\n", raiz->pal, raiz->ocur); //si es hoja, escribo la palabra y la ocurrencia
-        }
-        recorrerInOrden(raiz->der);
+// Escribe un array
+void mostrarArray(int arr[], int n) {
+    int i;
+    for (i = 0; i < n; ++i)
+        printf("%d", arr[i]);
+
+    printf("\n");
+}
+
+
+
+// Crea un nodo del arbol de Huffman
+struct NodoHuff *creaNodo(char pal[], unsigned ocur) {
+    struct NodoHuff *temp = (struct NodoHuff *)malloc(sizeof(struct NodoHuff));
+
+    temp->izq = temp->der = NULL;
+    strcpy(temp->pal, pal);
+    temp->ocur = ocur;
+
+    return temp;
+}
+
+// Crea la lista de sub Arboles
+struct TSubArbol *crearSubArboles(unsigned capacidad) {
+    struct TSubArbol *subArboles = (struct TSubArbol *)malloc(sizeof(struct TSubArbol));
+
+    subArboles->tamano = 0;
+
+    subArboles->capacidad = capacidad;
+
+    subArboles->array = (struct NodoHuff **)malloc(subArboles->capacidad * sizeof(struct NodoHuff *));
+    return subArboles;
+}
+
+// Intercambia los nodos
+void cambiaNodoMinimo(struct NodoHuff **a, struct NodoHuff **b) {
+    struct NodoHuff *t = *a;
+    *a = *b;
+    *b = t;
+}
+
+// Busca el nodo con menor frecuencia
+void minSubArbol(struct TSubArbol *subArboles, int idx) {
+    int min = idx;
+    int izq = 2 * idx + 1;
+    int der = 2 * idx + 2;
+
+    if (izq < subArboles->tamano && subArboles->array[izq]->ocur < subArboles->array[min]->ocur)
+        min = izq;
+
+    if (der < subArboles->tamano && subArboles->array[der]->ocur < subArboles->array[min]->ocur)
+        min = der;
+
+    if (min != idx) {
+        cambiaNodoMinimo(&subArboles->array[min], &subArboles->array[idx]);
+        minSubArbol(subArboles, min);
     }
 }
 
-//tamano tiene que ser invocado inicializado en cero
-void armarDiccionario(nodoHuffman *raiz, nodoDiccionario diccionario[], char codigo[], int *tamanoDiccionario, char caracterAgregado) {
-    if (caracterAgregado != '\0') { //excluye la invocacion inicial
-        codigo[strlen(codigo)] = caracterAgregado; //agrega el carcater al codigo
-    }
-
-    if (raiz->der == NULL && raiz->izq == NULL) { //si es hoja, hay que agregarlo al diccionario
-        strcpy(diccionario[*tamanoDiccionario].pal, raiz->pal);
-        strcpy(diccionario[*tamanoDiccionario].cod, codigo);
-        (*tamanoDiccionario)++;
-    }
-
-    if (raiz->izq != NULL) {
-        armarDiccionario(raiz->izq, diccionario, codigo, tamanoDiccionario, '0');
-    }
-    if (raiz->der != NULL) {
-        armarDiccionario(raiz->der, diccionario, codigo, tamanoDiccionario, '1');
-    }
-
-    codigo[strlen(codigo)] = '\0'; //elimina el caracter que recien agregue
+// Revisa si hay un solo subArbol
+int hayUno(struct TSubArbol *minHeap) {
+    return (minHeap->tamano == 1);
 }
 
-int encontrarMinimo(nodoHuffman *bosque[],int tamLista,int excluir) {
-    int smaller;
-    int i = 0;
+// Obtiene el minimo nodo
+struct NodoHuff *obtenerMinimo(struct TSubArbol *minHeap) {
+    struct NodoHuff *temp = minHeap->array[0];
+    minHeap->array[0] = minHeap->array[minHeap->tamano - 1];
 
-    while ((bosque[i]->sumado == 1) && (i < tamLista)) {
-        i++;
-    }
+    --minHeap->tamano;
+    minSubArbol(minHeap, 0);
 
-    smaller = i;
-
-    if (i == excluir){
-        i++;
-        while ( (i < tamLista) && (bosque[i]->sumado != 0))
-            i++;
-        smaller=i;
-    }
-
-    for (i=smaller;i < tamLista;i++){
-        if ((i != excluir) && (bosque[i]->sumado == 0)) {
-            if ((bosque[i]->ocur < bosque[smaller]->ocur)) {
-                smaller = i;
-            }
-            if ((bosque[i]->ocur == bosque[smaller]->ocur) && (strcmp(bosque[i]->pal, "") != 0) && (strcmp(bosque[smaller]->pal, "") == 0)) {
-                smaller = i;
-            }
-        }
-    }
-
-    return smaller;
+    return temp;
 }
 
-// La idea básica es armar un array de punteros a subarboles y agrupar los que tengan menor
-// probabilidad de ocurrencia hasta que quede uno solo, que será el arbol de Huffman
-void armarArbol(nodoProb lista[], int tamLista, nodoHuffman **arbol) {
-    nodoHuffman *aux1;
-    nodoHuffman *bosque[tamLista];
-    int cantSubArboles;
-    int menor1, menor2;
+// Insertion function
+void insertMinHeap(struct TSubArbol *subArboles, struct NodoHuff *minHeapNode) {
+    ++subArboles->tamano;
+    int i = subArboles->tamano - 1;
 
-    for (int i=0;i<tamLista;i++){
-        aux1 = (nodoHuffman *) malloc(sizeof(nodoHuffman));
-        strcpy(aux1->pal, lista[i].pal);
-        aux1->ocur = lista[i].ocurrencia;
-        aux1->izq = NULL;
-        aux1->der = NULL;
-        aux1->sumado = 0;
-        bosque[i] = aux1;
+    while (i && minHeapNode->ocur < subArboles->array[(i - 1) / 2]->ocur) {
+        subArboles->array[i] = subArboles->array[(i - 1) / 2];
+        i = (i - 1) / 2;
     }
+    subArboles->array[i] = minHeapNode;
+}
 
+void construyeSubArboles(struct TSubArbol *subArboles) {
+    int n = subArboles->tamano - 1;
+    int i;
 
-    cantSubArboles = tamLista;
-    while (cantSubArboles > 1) {
-        menor1 = encontrarMinimo(bosque, tamLista,-1);
-        menor2 = encontrarMinimo(bosque, tamLista,menor1);
-        aux1 = bosque[menor1];
-        bosque[menor1] = (nodoHuffman*) malloc(sizeof(nodoHuffman));
+    for (i = (n - 1) / 2; i >= 0; --i)
+        minSubArbol(subArboles, i);
+}
 
-        strcpy(bosque[menor1]->pal, "");
-        bosque[menor1]->ocur = aux1->ocur + bosque[menor2]->ocur;
-        bosque[menor1]->der = bosque[menor2];
-        bosque[menor1]->izq = aux1;
-        bosque[menor2]->sumado = 1;
-        cantSubArboles--;
+int esHoja(struct NodoHuff *raiz) {
+    return !(raiz->izq) && !(raiz->der);
+}
+
+struct TSubArbol *creaSubArboles(nodoProb lista[], int tamLista) {
+    struct TSubArbol *subArboles = crearSubArboles(tamLista);
+
+    for (int i = 0; i < tamLista; ++i)
+        subArboles->array[i] = creaNodo(lista[i].pal, lista[i].ocurrencia);
+
+    subArboles->tamano = tamLista;
+    construyeSubArboles(subArboles);
+
+    return subArboles;
+}
+
+struct NodoHuff *construirArbolDeHuffman(nodoProb item[], int size) {
+    struct NodoHuff *left, *right, *tope;
+    struct TSubArbol *subArboles = creaSubArboles(item, size);
+
+    while (!hayUno(subArboles)) {
+        left = obtenerMinimo(subArboles);
+        right = obtenerMinimo(subArboles);
+
+        tope = creaNodo("", left->ocur + right->ocur);
+
+        tope->izq = left;
+        tope->der = right;
+
+        insertMinHeap(subArboles, tope);
     }
+    return obtenerMinimo(subArboles);
+}
 
-    *arbol = bosque[menor1];
+
+//Recorre el Arbol de Huffman y arma los codigos en arr
+void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope) {
+    if (raiz->izq) {
+        arr[tope] = 0;
+        escribirCodigosHuffman(raiz->izq, arr, tope + 1);
+    }
+    if (esHoja(raiz)) {
+        printf("  %s   | ", raiz->pal);
+        mostrarArray(arr, tope);
+    }
+    if (raiz->der) {
+        arr[tope] = 1;
+        escribirCodigosHuffman(raiz->der, arr, tope + 1);
+    }
 }
 
 void ejecutaHuffman(nodoProb lista[], int tamLista) {
-    nodoHuffman *raiz;
-    armarArbol(lista, tamLista, &raiz);
-    recorrerInOrden(raiz);
+    struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
+
+    int arr[ALT_MAXIMA], top = 0;
+
+    escribirCodigosHuffman(root, arr, top);
 }
