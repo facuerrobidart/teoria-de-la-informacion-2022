@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.23"
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "PARTE_2::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-PARTE_2-Debug-8f9cf627ff63e42cedc7.json",
+					"jsonFile" : "target-PARTE_2-Debug-4954197ffc1c0a761d04.json",
 					"name" : "PARTE_2",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/Gamer/Desktop/teoria-de-la-informacion-2022/TP1/PARTE 2/cmake-build-debug",
-		"source" : "C:/Users/Gamer/Desktop/teoria-de-la-informacion-2022/TP1/PARTE 2"
+		"build" : "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 2/cmake-build-debug",
+		"source" : "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 2"
 	},
 	"version" : 
 	{

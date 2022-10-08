@@ -39,10 +39,31 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista);
 void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int totalPalabras,float* entropia);
 void iniciaLista(nodoProb lista[]);
 void calculaKraft(int tamLista, int tamPalabra);
-void ejecutaHuffman(nodoProb lista[], int tamLista);
+void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra);
 
 int main(){
-    cincoSimbolos();
+    int opcion = 0;
+    while(opcion <= 0 || opcion >= 4){
+        printf("Seleccione una opcion: \n\n");
+        printf("1 - Procesar archivo con palabras de 3 caracteres\n");
+        printf("2 - Procesar archivo con palabras de 5 caracteres\n");
+        printf("3 - Procesar archivo con palabras de 7 caracteres\n");
+        scanf("%d", &opcion);
+    }
+
+    switch (opcion) {
+        case (1):
+            tresSimbolos();
+            break;
+        case (2):
+            cincoSimbolos();
+            break;
+        case (3):
+            sieteSimbolos();
+            break;
+        default:
+            break;
+    }
     return 0;
 }
 
@@ -124,19 +145,17 @@ void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantP
             lista[i].prob = (double) lista[i].ocurrencia / cantPalabras;
             cantidadDeInformacion += log2(1/lista[i].prob);
             (*entropia)+= lista[i].prob* log2(1/lista[i].prob);
-            //printf("Palabra: %s Ocurrencias: %4d Probalilidad: %0.4f \n", lista[i].pal, lista[i].ocurrencia, lista[i].prob);
     }
 
-    printf("cantidad de info:  %f \n",cantidadDeInformacion);
+    printf("Cantidad de informacion:  %f \n", cantidadDeInformacion);
     calculaKraft(tamLista, tamPalabra);
-    ejecutaHuffman(lista, tamLista);
+    ejecutaHuffman(lista, tamLista, tamPalabra);
 }
 
 void calculaKraft(int tamLista, int tamPalabra) {
     double kraft = 0;
     for (int k = 0; k< tamLista; k++){
         kraft += pow(3, (-1) * tamPalabra);
-        //printf("Kraft: %0.4f \n", kraft);
     }
 
     printf("Cantidad de palabras: %d \n", tamLista);
@@ -294,12 +313,12 @@ void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope, nodoDicc
         escribirCodigosHuffman(raiz->izq, arr, tope + 1, diccionario, contador);
     }
     if (esHoja(raiz)) {
-        printf("  %s   | ", raiz->pal);
+        //printf("  %s   | ", raiz->pal);
         strcpy(diccionario[*contador].pal, raiz->pal);
         insertarEnDiccionario(&diccionario[*contador], arr, tope);
         diccionario[*contador].ocurr = raiz->ocur;
         (*contador)++;
-        mostrarArray(arr, tope);
+        //mostrarArray(arr, tope);
     }
     if (raiz->der) {
         arr[tope] = 1;
@@ -312,7 +331,6 @@ void ordenaDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
 
     printf("-------------------------------------------------\n");
     printf("Ordenando Diccionario......\n");
-    printf("-------------------------------------------------\n");
 
     for (int i = 0; i < tamDiccionario; i++) {
         for (int j = i + 1; j < tamDiccionario; j++) {
@@ -326,6 +344,39 @@ void ordenaDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
 
 }
 
+char *buscaPalabra(nodoDiccionario diccionario[], int tamDiccionario, char palabra[]) {
+    for (int i = 0; i < tamDiccionario; i++) {
+        if ( strcmp(palabra, diccionario[i].pal) == 0) {
+            return diccionario[i].cod;
+        }
+    }
+    return "";
+}
+
+void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int tamPalabra) {
+    FILE *archCodificado;
+    FILE *archOriginal;
+    archOriginal = fopen("text.txt", "r+");
+    archCodificado = fopen("archCodificado.txt", "w+");
+    char pal[8];
+
+    printf("-------------------------------------------------\n");
+    printf("Generando archivo codificado......\n");
+
+    while (!feof(archOriginal)) {
+        fgets(pal, (tamPalabra + 1) * sizeof(char), archOriginal);
+        pal[tamPalabra] = '\0';
+        if (strlen(pal) == tamPalabra) {
+            fputs(buscaPalabra(diccionario, tamDiccionario, pal), archCodificado);
+        }
+    }
+    printf("-------------------------------------------------\n");
+    printf("Archivo codificado generado con exito!\n");
+    printf("-------------------------------------------------\n");
+    fclose(archOriginal);
+    fclose(archCodificado);
+}
+
 void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
 
     printf("-------------------------------------------------\n");
@@ -335,7 +386,7 @@ void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
     }
 }
 
-void ejecutaHuffman(nodoProb lista[], int tamLista) {
+void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra) {
     struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
 
     int arr[ALT_MAXIMA], top = 0;
@@ -344,5 +395,6 @@ void ejecutaHuffman(nodoProb lista[], int tamLista) {
 
     escribirCodigosHuffman(root, arr, top, diccionario, &contador);
     ordenaDiccionario(diccionario, tamLista);
-    mostrarDiccionario(diccionario, tamLista);
+    generaArchCodificado(diccionario, tamLista, tamPalabra);
+    //mostrarDiccionario(diccionario, tamLista);
 }

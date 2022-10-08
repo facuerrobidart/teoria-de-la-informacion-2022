@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "PARTE_2.exe"
-		},
-		{
-			"path" : "PARTE_2.pdb"
+			"path" : "PARTE_2"
 		}
 	],
 	"backtrace" : 1,
@@ -38,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
+					"fragment" : "-g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk"
 				},
 				{
 					"fragment" : "-std=gnu11"
@@ -71,16 +68,12 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
-				"role" : "libraries"
 			}
 		],
 		"language" : "C"
 	},
 	"name" : "PARTE_2",
-	"nameOnDisk" : "PARTE_2.exe",
+	"nameOnDisk" : "PARTE_2",
 	"paths" : 
 	{
 		"build" : ".",
