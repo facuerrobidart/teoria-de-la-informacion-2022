@@ -147,7 +147,8 @@ void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantP
             (*entropia)+= lista[i].prob* log2(1/lista[i].prob);
     }
 
-    printf("Cantidad de informacion:  %f \n", cantidadDeInformacion);
+    printf("Cantidad de informacion:  %0.2f \n", cantidadDeInformacion);
+    printf("Entropia: %0.2f \n", (*entropia));
     calculaKraft(tamLista, tamPalabra);
     ejecutaHuffman(lista, tamLista, tamPalabra);
 }
