@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "TP1.exe"
-		},
-		{
-			"path" : "TP1.pdb"
+			"path" : "TP1"
 		}
 	],
 	"backtrace" : 1,
@@ -38,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
+					"fragment" : "-g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk"
 				},
 				{
 					"fragment" : "-std=gnu99"
@@ -71,16 +68,12 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
-				"role" : "libraries"
 			}
 		],
 		"language" : "C"
 	},
 	"name" : "TP1",
-	"nameOnDisk" : "TP1.exe",
+	"nameOnDisk" : "TP1",
 	"paths" : 
 	{
 		"build" : ".",

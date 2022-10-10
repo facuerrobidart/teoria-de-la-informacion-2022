@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/Gamer/Desktop/teoria-de-la-informacion-2022/TP1/main.c" "CMakeFiles/TP1.dir/main.c.obj" "gcc" "CMakeFiles/TP1.dir/main.c.obj.d"
+  "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 1/main.c" "CMakeFiles/TP1.dir/main.c.o" "gcc" "CMakeFiles/TP1.dir/main.c.o.d"
   )
 
 # Targets to which this target links.

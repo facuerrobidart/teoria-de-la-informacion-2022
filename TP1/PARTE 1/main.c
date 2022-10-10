@@ -37,6 +37,7 @@ int main()
         printf("El grafo no es ergodico.");
 
     return 0;
+
 }
 
 void inicializar(int N, float probabilidades[][N], float VecEst[])
@@ -80,11 +81,11 @@ void calcularProbabilidades(int N, float probabilidades[][N])
     for(int i = 0; i < N; i++)
         printf("%c: %d\n",i+'A',cont[i]);
     printf("Ocurrencias:\n");
-    printf("\tA\tB\tC\n");
+    printf("\tA\tB\tC\n\n");
 
     for (int i = 0; i < N; i++)
     {
-        printf("\t");
+        printf("%c\t",'A'+i);
         for (int j = 0; j < N; j++)
         {
             printf("%0.0f\t",ocurrencias[i][j]);
@@ -108,11 +109,11 @@ void calcularProbabilidades(int N, float probabilidades[][N])
 void mostrarMatriz(int N, float probabilidades[][N])
 {
     printf("Matriz de pasaje:\n");
-    printf("\tA\tB\tC\n");
+    printf("\tA\tB\tC\n\n");
 
     for (int i = 0; i < N; i++)
     {
-        printf("\t");
+        printf("%c\t",'A'+i);
         for (int j = 0; j < N; j++)
             printf("%0.2f\t",probabilidades[i][j]);
         printf("\n");
@@ -121,29 +122,24 @@ void mostrarMatriz(int N, float probabilidades[][N])
 
 int esErgodico(int N, float probabilidades[][N])
 {
-    int M[N][N];
-    int fila=0, columna=0;
-    for(int i = 0; i < N; i++)
-        for(int j= 0; j< N; j++)
-            M[i][j] = 0;
-    for(int k = 0; k < N; k++)
-        for(int i = 0; i < N; i++)
-            for(int j = 0; j < N; j++)
-                if(probabilidades[i][j] > 0 || (probabilidades[i][k] + probabilidades[k][j] > 0))
-                    M[i][j] = 1;
-    while(fila < N)
+    int i = 0;
+    int aux;
+    do
     {
-        while(columna < N)
+        aux = 0;
+        int j = 0;
+        while(j < N && aux == 0)
         {
-            if(M[fila][columna] != 1)
-                return 0;
-            columna++;
+            if(i != j && probabilidades[j][i]>0)
+                aux = 1;
+            j++;
         }
-        fila++;
-        columna = 0;
+        i++;
     }
-    return 1;
+    while (i < N && aux == 1);
+    return aux;
 }
+
 
 void creaMGauss(int N, float MGauss[][N+1], float probabilidades[][N])
 {
@@ -201,5 +197,3 @@ float Entropia(int N, float probabilidades[][N], float VecEst[])
     }
     return H;
 }
-
-
