@@ -88,6 +88,9 @@ float reduncancia(float entropia, float longitudMedia) {
 
 
 void leerArchivo(int tamPalabra) {
+    printf("-------------------------------------------------\n");
+    printf("Leyendo archivo con palabras de %d caracteres\n", tamPalabra);
+
     FILE * arch = fopen("text.txt", "r");
     char pal[8];
     nodoProb lista[3500];
@@ -102,11 +105,13 @@ void leerArchivo(int tamPalabra) {
             contPalabras++;
         }
     }
+    printf("-------------------------------------------------\n");
 
     mostrarResultados(lista, tamPalabra, tamLista, contPalabras,&entropia);
     redundancia_=reduncancia(entropia,tamPalabra);
     rendimiento_=rendimiento(entropia,tamPalabra);
-    printf("redundancia: %f , rendimiento:  %f",redundancia_,rendimiento_);
+    printf("Redundancia: %0.2f \nRendimiento:  %0.2f \n", redundancia_, rendimiento_);
+    printf("-------------------------------------------------\n");
     fclose(arch);
 }
 
@@ -160,6 +165,8 @@ void calculaKraft(int tamLista, int tamPalabra) {
     }
 
     printf("Cantidad de palabras: %d \n", tamLista);
+
+    printf("Resultado Kraft/McMillan: %0.2f \n", kraft);
 
     if (kraft <= 1){
         printf("El codigo de tamano %d cumple la inecuacion de Kraft/MacMillan (es compacto)\n", tamPalabra);
@@ -314,12 +321,10 @@ void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope, nodoDicc
         escribirCodigosHuffman(raiz->izq, arr, tope + 1, diccionario, contador);
     }
     if (esHoja(raiz)) {
-        //printf("  %s   | ", raiz->pal);
         strcpy(diccionario[*contador].pal, raiz->pal);
         insertarEnDiccionario(&diccionario[*contador], arr, tope);
         diccionario[*contador].ocurr = raiz->ocur;
         (*contador)++;
-        //mostrarArray(arr, tope);
     }
     if (raiz->der) {
         arr[tope] = 1;
