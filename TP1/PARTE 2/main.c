@@ -363,7 +363,8 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
     FILE *archCodificado;
     FILE *archOriginal;
     archOriginal = fopen("text.txt", "r+");
-    archCodificado = fopen("archCodificado.txt", "w+");
+    char filename[50] = "archCodificado.bin";
+    archCodificado = fopen( filename, "wb+");
     char pal[8];
 
     printf("-------------------------------------------------\n");
@@ -372,8 +373,9 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
     while (!feof(archOriginal)) {
         fgets(pal, (tamPalabra + 1) * sizeof(char), archOriginal);
         pal[tamPalabra] = '\0';
-        if (strlen(pal) == tamPalabra) {
-            fputs(buscaPalabra(diccionario, tamDiccionario, pal), archCodificado);
+        if (strlen(pal) == tamPalabra) { //valida no leer la ultima palabra
+            int codificado = (int) strtol(buscaPalabra(diccionario, tamDiccionario, pal), NULL, 2);
+            fwrite(&codificado, sizeof(int), 1, archCodificado);
         }
     }
     printf("-------------------------------------------------\n");
