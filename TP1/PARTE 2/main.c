@@ -7,7 +7,7 @@ typedef struct nodoProb
 {
     char pal[8];
     int ocurrencia;
-    double prob;
+    float prob;
 } nodoProb;
 
 
@@ -79,9 +79,18 @@ void sieteSimbolos() {
     leerArchivo(7);
 }
 
-float rendimiento(float entropia, float longitudMedia) {
-    return entropia / longitudMedia;
+float calculaLongitudMedia(nodoProb lista[], int tamLista){
+  float l=0;
+  for(int i = 0; i < tamLista - 1; i++){
+   l += lista[i].prob * strlen(lista[i].pal);
+  }
+  return l;
 }
+
+float rendimiento(float entropia, float longitudMedia) {
+    return entropia/longitudMedia;
+}
+
 float reduncancia(float entropia, float longitudMedia) {
     return 1 - rendimiento(entropia, longitudMedia);
 }
@@ -97,7 +106,8 @@ void leerArchivo(int tamPalabra) {
     int tamLista = 0;
     int contPalabras = 0;
     iniciaLista(lista);
-    double entropia=0,redundancia_=0,rendimiento_=0;
+    float longitudMedia=0;
+    float entropia=0,redundancia_=0,rendimiento_=0;
     while (!feof(arch)) {
         fgets(pal, (tamPalabra + 1) * sizeof(char), arch);
         if (strlen(pal) == tamPalabra) {
@@ -107,9 +117,12 @@ void leerArchivo(int tamPalabra) {
     }
     printf("-------------------------------------------------\n");
 
+
     mostrarResultados(lista, tamPalabra, tamLista, contPalabras,&entropia);
-    redundancia_=reduncancia(entropia,tamPalabra);
-    rendimiento_=rendimiento(entropia,tamPalabra);
+   //printf("LA ENTROPIA ES: %f \n",entropia);
+    longitudMedia=calculaLongitudMedia(lista,tamLista);
+    redundancia_=reduncancia(entropia,longitudMedia);
+    rendimiento_=rendimiento(entropia,longitudMedia);
     printf("Redundancia: %0.2f \nRendimiento:  %0.2f \n", redundancia_, rendimiento_);
     printf("-------------------------------------------------\n");
     fclose(arch);
@@ -143,23 +156,28 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
     }
 }
 
+
+
 void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantPalabras,float * entropia) {
-    double cantidadDeInformacion = 0;
+    float cantidadDeInformacion = 0,longitudMedia;
 
     for (int i = 0; i < tamLista - 1; i++) {
-            lista[i].prob = (double) lista[i].ocurrencia / cantPalabras;
+            lista[i].prob = (float) lista[i].ocurrencia / cantPalabras;
             cantidadDeInformacion += log2(1/lista[i].prob);
-            (*entropia)+= lista[i].prob* log2(1/lista[i].prob);
+            (*entropia)= (*entropia) + lista[i].prob* log2(1/lista[i].prob)/log2(3);
+            //tuvimos que aplicarle cambio de base al log, ya que C no tiene definido log3
     }
-
     printf("Cantidad de informacion:  %0.2f \n", cantidadDeInformacion);
+    printf("Longitud media: %0.2f \n",calculaLongitudMedia(lista,tamLista));
     printf("Entropia: %0.2f \n", (*entropia));
     calculaKraft(tamLista, tamPalabra);
     ejecutaHuffman(lista, tamLista, tamPalabra);
 }
 
+
+
 void calculaKraft(int tamLista, int tamPalabra) {
-    double kraft = 0;
+    float kraft = 0;
     for (int k = 0; k< tamLista; k++){
         kraft += pow(3, (-1) * tamPalabra);
     }
