@@ -315,17 +315,17 @@ struct TSubArbol *creaSubArboles(nodoProb lista[], int tamLista) {
 }
 
 struct NodoHuff *construirArbolDeHuffman(nodoProb item[], int size) {
-    struct NodoHuff *left, *right, *tope;
+    struct NodoHuff *izq, *der, *tope;
     struct TSubArbol *subArboles = creaSubArboles(item, size);
 
     while (!hayUno(subArboles)) {
-        left = obtenerMinimo(subArboles);
-        right = obtenerMinimo(subArboles);
+        izq = obtenerMinimo(subArboles);
+        der = obtenerMinimo(subArboles);
 
-        tope = creaNodo("", left->ocur + right->ocur);
+        tope = creaNodo("", izq->ocur + der->ocur);
 
-        tope->izq = left;
-        tope->der = right;
+        tope->izq = izq;
+        tope->der = der;
 
         insertMinHeap(subArboles, tope);
     }
