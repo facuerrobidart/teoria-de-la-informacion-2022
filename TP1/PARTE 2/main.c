@@ -38,7 +38,7 @@ void leerArchivo();
 void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista);
 void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int totalPalabras,float* entropia);
 void iniciaLista(nodoProb lista[]);
-void calculaKraft(int tamLista, int tamPalabra);
+void calculaKraft(int tamLista, float longitudMedia);
 void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra);
 
 int main(){
@@ -80,11 +80,11 @@ void sieteSimbolos() {
 }
 
 float calculaLongitudMedia(nodoProb lista[], int tamLista){
-  float l=0;
-  for(int i = 0; i < tamLista - 1; i++){
-   l += lista[i].prob * strlen(lista[i].pal);
+  float longitudMedia=0;
+  for(int i = 0; i < tamLista ; i++){
+   longitudMedia += lista[i].prob * strlen(lista[i].pal);
   }
-  return l;
+  return longitudMedia;
 }
 
 float rendimiento(float entropia, float longitudMedia) {
@@ -161,25 +161,26 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
 void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantPalabras,float * entropia) {
     float cantidadDeInformacion = 0,longitudMedia;
 
-    for (int i = 0; i < tamLista - 1; i++) {
+    for (int i = 0; i < tamLista ; i++) {
             lista[i].prob = (float) lista[i].ocurrencia / cantPalabras;
             cantidadDeInformacion += log2(1/lista[i].prob);
             (*entropia)= (*entropia) + lista[i].prob* log2(1/lista[i].prob)/log2(3);
             //tuvimos que aplicarle cambio de base al log, ya que C no tiene definido log3
     }
+    longitudMedia=calculaLongitudMedia(lista,tamLista);
     printf("Cantidad de informacion:  %0.2f \n", cantidadDeInformacion);
-    printf("Longitud media: %0.2f \n",calculaLongitudMedia(lista,tamLista));
+    printf("Longitud media: %0.2f \n",longitudMedia);
     printf("Entropia: %0.2f \n", (*entropia));
-    calculaKraft(tamLista, tamPalabra);
+    calculaKraft(tamLista, longitudMedia);
     ejecutaHuffman(lista, tamLista, tamPalabra);
 }
 
 
 
-void calculaKraft(int tamLista, int tamPalabra) {
+void calculaKraft(int tamLista, float longitudMedia) {
     float kraft = 0;
     for (int k = 0; k< tamLista; k++){
-        kraft += pow(3, (-1) * tamPalabra);
+        kraft += pow(3, (-1) * longitudMedia);
     }
 
     printf("Cantidad de palabras: %d \n", tamLista);
@@ -187,10 +188,10 @@ void calculaKraft(int tamLista, int tamPalabra) {
     printf("Resultado Kraft/McMillan: %0.2f \n", kraft);
 
     if (kraft <= 1){
-        printf("El codigo de tamano %d cumple la inecuacion de Kraft/MacMillan (es compacto)\n", tamPalabra);
+        printf("El codigo de longitud media %f cumple la inecuacion de Kraft/MacMillan  (es compacto)\n", longitudMedia);
     }
     else {
-        printf("El codigo de tamano %d NO cumple la inecuacion de Kraft/MacMillan (es compacto)\n", tamPalabra);
+        printf("El codigo de longitud media %f NO cumple la inecuacion de Kraft/MacMillan (es compacto)\n", longitudMedia);
     }
 }
 
