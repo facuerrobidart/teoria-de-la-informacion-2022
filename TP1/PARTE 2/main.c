@@ -382,7 +382,7 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
     FILE *archOriginal;
     archOriginal = fopen("text.txt", "r+");
     char filename[50] = "archCodificado.bin";
-    archCodificado = fopen( filename, "wb+");
+    archCodificado = fopen( filename, "wb");
     char pal[8];
 
     printf("-------------------------------------------------\n");
@@ -392,8 +392,8 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
         fgets(pal, (tamPalabra + 1) * sizeof(char), archOriginal);
         pal[tamPalabra] = '\0';
         if (strlen(pal) == tamPalabra) { //valida no leer la ultima palabra
-            int codificado = (int) strtol(buscaPalabra(diccionario, tamDiccionario, pal), NULL, 2);
-            fwrite(&codificado, sizeof(int), 1, archCodificado);
+            unsigned short codificado = (unsigned  short) strtol(buscaPalabra(diccionario, tamDiccionario, pal), NULL, 2);
+            fwrite(&codificado, 2, 1, archCodificado);
         }
     }
     printf("-------------------------------------------------\n");
@@ -421,6 +421,6 @@ void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra) {
 
     escribirCodigosHuffman(root, arr, top, diccionario, &contador);
     ordenaDiccionario(diccionario, tamLista);
+    mostrarDiccionario(diccionario, tamLista);
     generaArchCodificado(diccionario, tamLista, tamPalabra);
-    //mostrarDiccionario(diccionario, tamLista);
 }
