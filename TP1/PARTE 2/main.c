@@ -263,8 +263,8 @@ void minSubArbol(struct TSubArbol *subArboles, int idx) {
 }
 
 // Revisa si hay un solo subArbol
-int hayUno(struct TSubArbol *minHeap) {
-    return (minHeap->tamano == 1);
+int hayUno(struct TSubArbol *subarboles) {
+    return (subarboles->tamano == 1);
 }
 
 // Obtiene el minimo nodo
