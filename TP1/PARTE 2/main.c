@@ -278,16 +278,15 @@ struct NodoHuff *obtenerMinimo(struct TSubArbol *minHeap) {
     return temp;
 }
 
-// Insertion function
-void insertMinHeap(struct TSubArbol *subArboles, struct NodoHuff *minHeapNode) {
+void insertarMinSub(struct TSubArbol *subArboles, struct NodoHuff *minimoNodo) {
     ++subArboles->tamano;
     int i = subArboles->tamano - 1;
 
-    while (i && minHeapNode->ocur < subArboles->array[(i - 1) / 2]->ocur) {
+    while (i && minimoNodo->ocur < subArboles->array[(i - 1) / 2]->ocur) {
         subArboles->array[i] = subArboles->array[(i - 1) / 2];
         i = (i - 1) / 2;
     }
-    subArboles->array[i] = minHeapNode;
+    subArboles->array[i] = minimoNodo;
 }
 
 void construyeSubArboles(struct TSubArbol *subArboles) {
@@ -327,7 +326,7 @@ struct NodoHuff *construirArbolDeHuffman(nodoProb item[], int size) {
         tope->izq = izq;
         tope->der = der;
 
-        insertMinHeap(subArboles, tope);
+        insertarMinSub(subArboles, tope);
     }
     return obtenerMinimo(subArboles);
 }
