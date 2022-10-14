@@ -268,12 +268,12 @@ int hayUno(struct TSubArbol *subarboles) {
 }
 
 // Obtiene el minimo nodo
-struct NodoHuff *obtenerMinimo(struct TSubArbol *minHeap) {
-    struct NodoHuff *temp = minHeap->array[0];
-    minHeap->array[0] = minHeap->array[minHeap->tamano - 1];
+struct NodoHuff *obtenerMinimo(struct TSubArbol *subArboles) {
+    struct NodoHuff *temp = subArboles->array[0];
+    subArboles->array[0] = subArboles->array[subArboles->tamano - 1];
 
-    --minHeap->tamano;
-    minSubArbol(minHeap, 0);
+    --subArboles->tamano;
+    minSubArbol(subArboles, 0);
 
     return temp;
 }
