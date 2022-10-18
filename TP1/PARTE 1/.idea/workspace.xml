@@ -20,14 +20,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="80d9947b-9ae6-4826-8e51-c9d292509dc6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TP1.dir/compiler_depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TP1.dir/compiler_depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/TP1" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/TP1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PARTE 2/archCodificado.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../PARTE 2/archCodificado.bin" afterDir="false" />
-    </list>
+    <list default="true" id="80d9947b-9ae6-4826-8e51-c9d292509dc6" name="Changes" comment="initialization issues" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,8 +75,16 @@
       <updated>1665425230714</updated>
       <workItem from="1665425232011" duration="665000" />
       <workItem from="1665703819576" duration="1438000" />
-      <workItem from="1666059078143" duration="453000" />
+      <workItem from="1666059078143" duration="708000" />
     </task>
+    <task id="LOCAL-00001" summary="initialization issues">
+      <created>1666059598312</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1666059598312</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -99,6 +100,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initialization issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="initialization issues" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

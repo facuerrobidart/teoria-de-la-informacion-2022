@@ -377,11 +377,44 @@ char *buscaPalabra(nodoDiccionario diccionario[], int tamDiccionario, char palab
     return "";
 }
 
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+ */
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
+
 void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int tamPalabra) {
     FILE *archCodificado;
     FILE *archOriginal;
     archOriginal = fopen("text.txt", "r+");
-    char filename[50] = "archCodificado.bin";
+    char sufijo[10] = "";
+    itoa(tamPalabra, sufijo, 10);
+    char filename[50] = "archCodificado";
+    strcat(filename, sufijo);
+    strcat(filename, ".bin");
     archCodificado = fopen( filename, "wb");
     char pal[8];
 
