@@ -56,9 +56,12 @@ void calcularProbabilidades(int N, float probabilidades[][N])
     float ocurrencias[N][N];
     int cont[N];
 
+    for (int j = 0; j < N; j++)
+    {
+        cont[j] = 0;
+    }
     for (int i = 0; i < N; i++)
     {
-        cont[i] = 0;
         for (int k = 0; i < N; i++)
         {
             ocurrencias[i][k] = 0;
@@ -79,7 +82,7 @@ void calcularProbabilidades(int N, float probabilidades[][N])
 
     printf("Cantidad de veces que aparece cada caracter:\n");
     for(int i = 0; i < N; i++)
-        printf("%c: %d\n",i+'A',cont[i]);
+        printf("%c: %d\n",i + 'A',cont[i]);
     printf("Ocurrencias:\n");
     printf("\tA\tB\tC\n\n");
 
