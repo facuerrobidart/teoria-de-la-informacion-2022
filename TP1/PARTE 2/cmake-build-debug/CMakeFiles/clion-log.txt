@@ -1,4 +1,0 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 2" -B "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 2/cmake-build-debug"
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 2/cmake-build-debug

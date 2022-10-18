@@ -1,3 +1,0 @@
-/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 1/cmake-build-debug/CMakeFiles/TP1.dir
-/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 1/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022/TP1/PARTE 1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
