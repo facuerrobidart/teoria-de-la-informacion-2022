@@ -1,7 +1,8 @@
 En este directorio se encuentran los ejecutables ya compilados, para ejecutarlos basta en la correr en la terminal
 
-	`./parte1`
-	`./parte2`
+`./parte1`
+
+`./parte2`
 
 El código se encuentra dividido de la misma manera que la consigna y el informe. El archivo necesario con los caracteres
 está incluido en este directorio (text.txt). Los archivos generados por la parte 2 son generados en esta misma carpeta,
@@ -11,6 +12,7 @@ Los códigos fuentes de ambos ejecutables se encuentran en `parte1.c` y `parte2.
 desde la consola usando gcc usando:
 
 `gcc -o parte1 parte1.c -lm`
+
 `gcc -o parte2 parte2.c -lm`
 
 Luego se podrán ejecutar utilizando los comandos de arriba.
