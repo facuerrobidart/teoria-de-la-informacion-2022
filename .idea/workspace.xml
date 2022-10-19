@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dc25e324-6568-4482-ad7a-b3a5d6b0e5a9" name="Changes" comment="" />
+    <list default="true" id="dc25e324-6568-4482-ad7a-b3a5d6b0e5a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado3.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado3.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado5.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado5.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado7.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado7.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/Entrega/parte2" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/parte2" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +40,7 @@
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/Users/facundoerrobidart/CLionProjects/teoria-de-la-informacion-2022",
+    "last_opened_file_path": "/home/facundo/teoria-de-la-informacion-2022/TP1/PARTE 2",
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
@@ -113,6 +119,7 @@
       <option name="presentableId" value="Default" />
       <updated>1665248466237</updated>
       <workItem from="1665248467464" duration="124000" />
+      <workItem from="1666139914130" duration="25000" />
     </task>
     <servers />
   </component>

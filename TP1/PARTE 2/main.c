@@ -529,7 +529,7 @@ void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra) {
     generaArchCodificado(diccionario, tamLista, tamPalabra);
 
     printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
-    int opcion;
+    int opcion = 5;
     while (opcion != 0 && opcion != 1) {
         scanf("%d", &opcion);
     }
