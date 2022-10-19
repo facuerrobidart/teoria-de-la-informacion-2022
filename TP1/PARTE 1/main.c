@@ -56,15 +56,12 @@ void calcularProbabilidades(int N, float probabilidades[][N])
     float ocurrencias[N][N];
     int cont[N];
 
-    for (int j = 0; j < N; j++)
-    {
+    for (int j = 0; j < N; j++){
         cont[j] = 0;
     }
-    for (int i = 0; i < N; i++)
-    {
-        for (int k = 0; i < N; i++)
-        {
-            ocurrencias[i][k] = 0;
+    for (int i = 0; i < N; i++){
+        for (int k = 0; i < N; i++){
+            ocurrencias[i][k] = 0.0;
         }
     }
 
