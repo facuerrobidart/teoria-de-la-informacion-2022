@@ -31,6 +31,11 @@ struct TSubArbol {
     struct NodoHuff **array;
 };
 
+typedef struct formatoDiccionario {
+    char pal[8];
+    unsigned short cod;
+} formatoDiccionario;
+
 void tresSimbolos();
 void cincoSimbolos();
 void sieteSimbolos();
@@ -120,7 +125,7 @@ void leerArchivo(int tamPalabra) {
 
     mostrarResultados(lista, tamPalabra, tamLista, contPalabras,&entropia);
    //printf("LA ENTROPIA ES: %f \n",entropia);
-    longitudMedia=calculaLongitudMedia(lista,tamLista);
+    longitudMedia= (float) tamPalabra; //calculaLongitudMedia(lista,tamLista);
     redundancia_=reduncancia(entropia,longitudMedia);
     rendimiento_=rendimiento(entropia,longitudMedia);
     printf("Redundancia: %0.2f \nRendimiento:  %0.2f \n", redundancia_, rendimiento_);
@@ -156,7 +161,18 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
     }
 }
 
+//como todas las palabras son de igual longitud, basta con analizar la compactitud de una sola palabra
+void compactitud(int tamPalabra) {
+    float probabilidadPalabra = 1.0 / pow(3, tamPalabra);
+    float resultado = log2(1/probabilidadPalabra)/log2(3); //esto es un logaritmo base 3, usamos cambio de base
 
+    if ((int) resultado == tamPalabra) {
+        printf("El codigo es compacto\n");
+    }
+    else {
+        printf("El codigo no es compacto\n");
+    }
+}
 
 void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantPalabras,float * entropia) {
     float cantidadDeInformacion = 0,longitudMedia;
@@ -167,15 +183,14 @@ void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantP
             (*entropia)= (*entropia) + lista[i].prob* log2(1/lista[i].prob)/log2(3);
             //tuvimos que aplicarle cambio de base al log, ya que C no tiene definido log3
     }
-    longitudMedia=calculaLongitudMedia(lista,tamLista);
+    longitudMedia = tamPalabra; //si bien hay un calculo de longitud media, todas las palabras son de la misma longitud por definicion
     printf("Cantidad de informacion:  %0.2f \n", cantidadDeInformacion);
     printf("Longitud media: %0.2f \n",longitudMedia);
     printf("Entropia: %0.2f \n", (*entropia));
     calculaKraft(tamLista, longitudMedia);
+    compactitud(tamPalabra);
     ejecutaHuffman(lista, tamLista, tamPalabra);
 }
-
-
 
 void calculaKraft(int tamLista, float longitudMedia) {
     float kraft = 0;
@@ -188,10 +203,10 @@ void calculaKraft(int tamLista, float longitudMedia) {
     printf("Resultado Kraft/McMillan: %0.2f \n", kraft);
 
     if (kraft <= 1){
-        printf("El codigo de longitud media %f cumple la inecuacion de Kraft/MacMillan  (es compacto)\n", longitudMedia);
+        printf("El codigo de longitud media %f cumple la inecuacion de Kraft/MacMillan\n", longitudMedia);
     }
     else {
-        printf("El codigo de longitud media %f NO cumple la inecuacion de Kraft/MacMillan (es compacto)\n", longitudMedia);
+        printf("El codigo de longitud media %f NO cumple la inecuacion de Kraft/MacMillan\n", longitudMedia);
     }
 }
 
@@ -421,7 +436,18 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
     printf("-------------------------------------------------\n");
     printf("Generando archivo codificado......\n");
 
-    while (!feof(archOriginal)) {
+    formatoDiccionario aux;
+
+
+    fwrite(&tamDiccionario, sizeof(int), 1, archCodificado); //Los primeros 4 bytes son el tamaño del diccionario
+
+    for (int i = 0; i < tamDiccionario; i++) { //Escribo el diccionario, en total son 8 bytes por palabra y 2 bytes por codigo, por lo que el tamaño del diccionario es 10 bytes por palabra
+        strcpy(aux.pal, diccionario[i].pal);
+        aux.cod = strtol(diccionario[i].cod, NULL, 2);
+        fwrite(&aux, sizeof(formatoDiccionario), 1, archCodificado);
+    }
+
+    while (!feof(archOriginal)) { //Escribo el texto codificado
         fgets(pal, (tamPalabra + 1) * sizeof(char), archOriginal);
         pal[tamPalabra] = '\0';
         if (strlen(pal) == tamPalabra) { //valida no leer la ultima palabra
@@ -429,6 +455,7 @@ void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int
             fwrite(&codificado, 2, 1, archCodificado);
         }
     }
+
     printf("-------------------------------------------------\n");
     printf("Archivo codificado generado con exito!\n");
     printf("-------------------------------------------------\n");
@@ -445,15 +472,68 @@ void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
     }
 }
 
+char *buscarTraduccion(formatoDiccionario diccionario[], int tamDiccionario, unsigned short codigo) {
+    for (int i = 0; i < tamDiccionario; i++) {
+        if (codigo == diccionario[i].cod) {
+            return diccionario[i].pal;
+        }
+    }
+    return "";
+}
+
+void reconstruirTexto(int tamPalabra) {
+    char filename[50] = "archCodificado";
+    char sufijo[10] = "";
+    itoa(tamPalabra, sufijo, 10);
+    strcat(filename, sufijo);
+    strcat(filename, ".bin");
+
+    printf("-------------------------------------------------\n");
+    printf("Reconstruyendo texto......\n");
+    FILE *archCodificado = fopen(filename, "rb");
+
+    int tamDiccionario;
+    fread(&tamDiccionario, sizeof(int), 1, archCodificado);
+
+    formatoDiccionario diccionario[tamDiccionario];
+
+
+    for (int i = 0; i < tamDiccionario; i++) {
+        fread(&diccionario[i], sizeof(formatoDiccionario), 1, archCodificado);
+    }
+
+    int cont = 0;
+    while (!feof(archCodificado)) {
+        cont++;
+        unsigned short codigo;
+        fread(&codigo, sizeof(unsigned short), 1, archCodificado);
+        printf("%s", buscarTraduccion(diccionario, tamDiccionario, codigo));
+        if (cont == 10) {
+            printf("\n");
+            cont = 0;
+        }
+    }
+
+    printf("\n-------------------------------------------------\n");
+}
+
 void ejecutaHuffman(nodoProb lista[], int tamLista, int tamPalabra) {
     struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
 
     int arr[ALT_MAXIMA], top = 0;
     nodoDiccionario diccionario[tamLista];
     int contador = 0;
-
     escribirCodigosHuffman(root, arr, top, diccionario, &contador);
     ordenaDiccionario(diccionario, tamLista);
     mostrarDiccionario(diccionario, tamLista);
     generaArchCodificado(diccionario, tamLista, tamPalabra);
+
+    printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
+    int opcion;
+    while (opcion != 0 && opcion != 1) {
+        scanf("%d", &opcion);
+    }
+    if (opcion == 1) {
+        reconstruirTexto(tamPalabra);
+    }
 }
