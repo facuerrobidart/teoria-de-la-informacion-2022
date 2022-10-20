@@ -161,16 +161,22 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
     }
 }
 
-//como todas las palabras son de igual longitud, basta con analizar la compactitud de una sola palabra
-void compactitud(int tamPalabra) {
-    float probabilidadPalabra = 1.0 / pow(3, tamPalabra);
-    float resultado = log2(1/probabilidadPalabra)/log2(3); //esto es un logaritmo base 3, usamos cambio de base
+void compactitud(nodoProb lista[], int tamLista, int tamPalabra) {
+    float probabilidadPalabra;
+    float resultado;
+
+    for (int i = 0; i < tamLista; i++) {
+        probabilidadPalabra = lista[i].prob;
+        resultado = log2(1/probabilidadPalabra)/log2(3);
+
+        if ((int) resultado != tamPalabra) {
+            printf("El codigo no es compacto\n");
+            return;
+        }
+    }
 
     if ((int) resultado == tamPalabra) {
         printf("El codigo es compacto\n");
-    }
-    else {
-        printf("El codigo no es compacto\n");
     }
 }
 
@@ -188,7 +194,7 @@ void mostrarResultados(nodoProb lista[], int tamPalabra, int tamLista, int cantP
     printf("Longitud media: %0.2f \n",longitudMedia);
     printf("Entropia: %0.2f \n", (*entropia));
     calculaKraft(tamLista, longitudMedia);
-    compactitud(tamPalabra);
+    compactitud(lista, tamLista, tamPalabra);
     ejecutaHuffman(lista, tamLista, tamPalabra);
 }
 
