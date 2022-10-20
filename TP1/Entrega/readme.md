@@ -20,3 +20,5 @@ Luego se podrán ejecutar utilizando los comandos de arriba.
 La presentación de este entregable se puede consultar [aquí](https://docs.google.com/presentation/d/1i8fpmt1ERtr9jlNqCjUUk4BS0kw03tKO2zhHuX3uFiY/edit?usp=sharing)
 
 Mientras que el informe en formato PDF se encuentra en este directorio o en el siguente [enlace](https://docs.google.com/document/d/1GJjXc6Vrxj7m7lhF-TiWQP_EingeXafM3Rl3j5b6aH4/edit?usp=sharing)
+
+El video con la presentación esta en este [enlace](https://www.youtube.com/watch?v=UmhliSpb6jA)
