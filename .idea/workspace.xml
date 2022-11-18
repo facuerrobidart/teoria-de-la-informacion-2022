@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
 }</component>
@@ -9,12 +12,21 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dc25e324-6568-4482-ad7a-b3a5d6b0e5a9" name="Changes" comment="">
+    <list default="true" id="6f6c25b0-be27-406f-8048-1cfd25788d40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado3.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado3.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado5.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado5.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/Entrega/archCodificado7.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/archCodificado7.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/Entrega/parte2" beforeDir="false" afterPath="$PROJECT_DIR$/TP1/Entrega/parte2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/TP1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 1/.idea/PARTE 1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/PARTE 2.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/vcs.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,75 +53,13 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "last_opened_file_path": "/home/facundo/teoria-de-la-informacion-2022/TP1/PARTE 2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="teoria-de-la-informacion-2022" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="teoria-de-la-informacion-2022" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Autodetect">
-      <module name="teoria-de-la-informacion-2022" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="teoria-de-la-informacion-2022" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
