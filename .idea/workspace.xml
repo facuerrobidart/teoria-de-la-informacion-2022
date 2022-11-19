@@ -6,6 +6,12 @@
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
 }</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated />
+  </component>
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
@@ -13,20 +19,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f6c25b0-be27-406f-8048-1cfd25788d40" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/TP2/PARTE 1/main.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TP2/PARTE 1/text.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/teoria-de-la-informacion-2022.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/TP1.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 1/.idea/PARTE 1.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/PARTE 2.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP1/PARTE 2/.idea/vcs.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +32,17 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2022" />
+    <option name="minorVersion" value="2.1" />
   </component>
   <component name="ProjectId" id="2FrRxxibuC6FeLBnrastWWN2BdL" />
   <component name="ProjectViewState">
@@ -52,7 +57,7 @@
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/facundo/teoria-de-la-informacion-2022/TP1/PARTE 2",
+    "last_opened_file_path": "C:/Users/Gamer/Desktop/teoria-de-la-informacion-2022/TP2/PARTE 1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -60,6 +65,18 @@
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Gamer\Desktop\teoria-de-la-informacion-2022\TP2\PARTE 2" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
