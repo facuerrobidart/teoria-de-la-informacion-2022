@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 #include <math.h>
 
 #define ALT_MAXIMA 200
@@ -35,6 +36,14 @@ typedef struct nodoProb
     float prob;
 } nodoProb;
 
+typedef struct nodoShannon {
+    char pal[25];
+    float pro;
+    int arr[20];
+    int top;
+    int ocurrencia;
+} nodoShannon;
+
 void huffman();
 void shannonFano();
 void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista);
@@ -53,13 +62,13 @@ int main() {
     if (opcion == 1) {
         huffman();
     } else {
-        //shannonFano();
+        shannonFano();
     }
     return 0;
 }
 
 void iniciaLista(nodoProb lista[]) {
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 5000; i++) {
         lista[i].ocurrencia = 0;
         lista[i].prob = 0;
         strcpy(lista[i].pal, "");
@@ -98,6 +107,11 @@ void leerArchivo(nodoProb lista[], int *tamLista, int *contPalabras) {
         buscaYCuenta(lista, pal, tamLista);
         (*contPalabras)++;
     }
+
+    for (int i = 0; i < *tamLista; i++) {
+        lista[i].prob = (float) lista[i].ocurrencia / ((float) (*contPalabras));
+    }
+
     printf("-------------------------------------------------\n");
     fclose(arch);
 }
@@ -284,7 +298,6 @@ char *buscaPalabra(nodoDiccionario diccionario[], int tamDiccionario, char palab
 }
 
 void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
-
     printf("-------------------------------------------------\n");
     printf("Diccionario:\n");
     for(int i = 0; i < tamDiccionario; i++) {
@@ -292,12 +305,16 @@ void mostrarDiccionario(nodoDiccionario diccionario[], int tamDiccionario) {
     }
 }
 
-void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario) {
+void generaArchCodificado(nodoDiccionario diccionario[], int tamDiccionario, int esHuffman) {
     FILE *archCodificado;
     FILE  *archOriginal = fopen("text.txt", "r+");
-    char sufijo[10] = "";
     char filename[50] = "archCodificado";
-    strcat(filename, ".bin");
+
+    if (esHuffman)
+        strcat(filename, ".huf");
+    else
+        strcat(filename, ".sha");
+
     archCodificado = fopen( filename, "wb");
     char pal[25];
 
@@ -338,9 +355,12 @@ char *buscarTraduccion(formatoDiccionario diccionario[], int tamDiccionario, uns
 }
 
 
-void reconstruirTexto() {
+void reconstruirTexto(int esHuffman) {
     char filename[50] = "archCodificado";
-    strcat(filename, ".bin");
+    if (esHuffman)
+        strcat(filename, ".huf");
+    else
+        strcat(filename, ".sha");
 
     printf("-------------------------------------------------\n");
     printf("Reconstruyendo texto......\n");
@@ -372,10 +392,8 @@ void reconstruirTexto() {
 }
 
 
-
-
 void huffman() {
-    nodoProb lista[10000];
+    nodoProb *lista = (nodoProb *) malloc(sizeof(nodoProb) * 10000);
     int tamLista = 0;
     int contPalabras = 0;
     leerArchivo(lista, &tamLista, &contPalabras);
@@ -383,25 +401,160 @@ void huffman() {
     struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
 
     int arr[ALT_MAXIMA], top = 0;
+    free(lista);
     nodoDiccionario diccionario[tamLista];
     int contador = 0;
     escribirCodigosHuffman(root, arr, top, diccionario, &contador);
     ordenaDiccionario(diccionario, tamLista);
-    mostrarDiccionario(diccionario, tamLista);
-    generaArchCodificado(diccionario, tamLista);
 
-    printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
     int opcion = 5;
+    printf("-------------------------------------------------\n");
+    printf("Presione 1 para mostrar el diccionario, 0 para seguir: ");
+    while (opcion != 0 && opcion != 1) {
+        scanf("%d", &opcion);
+    }
+
+    if (opcion == 1) {
+        mostrarDiccionario(diccionario, tamLista);
+    }
+
+    generaArchCodificado(diccionario, tamLista, 1);
+
+    opcion = 5;
+    printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
     while (opcion != 0 && opcion != 1) {
         scanf("%d", &opcion);
     }
     if (opcion == 1) {
-        reconstruirTexto();
+        reconstruirTexto(1);
     }
 }
 
 
-void shennonFano() {
 
+void shannon(int l, int h, nodoShannon s[]) {
+    float pack1=0,pack2=0,diff1=0,diff2=0;
+    int i, k, j;
+    if((l+1)==h || l==h || l>h) {
+        if(l==h || l>h)
+            return;
+        s[h].arr[++(s[h].top)]=0;
+        s[l].arr[++(s[l].top)]=1;
+        return;
+    }
+    else {
+        for(i=l;i <= h-1;i++)
+            pack1=pack1+s[i].pro;
+        pack2 = pack2 + s[h].pro;
+        diff1 = pack1 - pack2;
+
+        if(diff1< 0)
+            diff1=diff1*-1;
+        j=2;
+
+        while(j != h-l+1) {
+            k = h - j;
+            pack1 = pack2 = 0;
+
+            for(i=l;i<=k;i++)
+                pack1 = pack1 + s[i].pro;
+
+            for(i=h;i>k;i--)
+                pack2 = pack2 + s[i].pro;
+
+            diff2 = pack1 - pack2;
+
+            if(diff2 < 0)
+                diff2 = diff2*-1;
+
+            if(diff2>=diff1)
+                break;
+
+            diff1 = diff2;
+            j++;
+        }
+        k++;
+
+        for(i=l;i <= k;i++)
+            s[i].arr[++(s[i].top)]=1;
+
+        for(i=k+1;i <= h;i++)
+            s[i].arr[++(s[i].top)]=0;
+
+        shannon(l,k,s);
+        shannon(k+1,h,s);
+    }
 }
 
+void transformarANodoShannon(nodoProb lista[], nodoShannon s[], int tamLista) {
+    for (int i = 0; i < tamLista; i++) {
+        strcpy(s[i].pal, lista[i].pal);
+        s[i].pro = lista[i].prob;
+        s[i].top = -1;
+        s[i].ocurrencia = lista[i].ocurrencia;
+    }
+}
+
+void ordenarShannon(nodoShannon s[], int tamLista) {
+    for (int i = 0; i < tamLista; i++) {
+        for (int j = 0; j < tamLista - 1; j++) {
+            if (s[j].pro < s[j + 1].pro) {
+                nodoShannon aux = s[j];
+                s[j] = s[j + 1];
+                s[j + 1] = aux;
+            }
+        }
+    }
+}
+
+
+void nodoShannonADiccionario(nodoShannon s[], nodoDiccionario diccionario[], int tamLista) {
+    for (int i = 0; i < tamLista; i++) {
+        strcpy(diccionario[i].pal, s[i].pal);
+        diccionario[i].ocurr = s[i].ocurrencia;
+        for (int j = 0; j <= s[i].top; j++) {
+            diccionario[i].cod[j] = s[i].arr[j] + '0';
+        }
+        diccionario[i].cod[s[i].top] = '\0';
+    }
+}
+
+void shannonFano() {
+    nodoProb *lista = (nodoProb *) malloc(sizeof(nodoProb) * 10000);
+    nodoShannon *s = (nodoShannon *) malloc(sizeof(nodoShannon) * 10000);
+    int tamLista = 0;
+    int contPalabras = 0;
+    leerArchivo(lista, &tamLista, &contPalabras);
+    transformarANodoShannon(lista, s, tamLista);
+
+    free(lista);
+
+    ordenarShannon(s, tamLista);
+    shannon(0, tamLista - 1, s);
+
+    nodoDiccionario *diccionario = (nodoDiccionario *) malloc(sizeof(nodoDiccionario) * tamLista);
+    nodoShannonADiccionario(s, diccionario, tamLista);
+    free(s);
+
+    ordenaDiccionario(diccionario, tamLista);
+
+    int opcion = 5;
+    while (opcion != 0 && opcion != 1) {
+        printf("Presione 1 si desea mostrar el diccionario, 0 para seguir: ");
+        scanf("%d", &opcion);
+    }
+    if (opcion == 1) {
+        mostrarDiccionario(diccionario, tamLista);
+    }
+
+    generaArchCodificado(diccionario, tamLista, 0);
+
+    opcion = 5;
+    printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
+    while (opcion != 0 && opcion != 1) {
+        scanf("%d", &opcion);
+    }
+    if (opcion == 1) {
+        reconstruirTexto(0);
+    }
+}
