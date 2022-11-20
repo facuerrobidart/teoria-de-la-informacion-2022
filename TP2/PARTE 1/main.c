@@ -6,13 +6,13 @@
 
 struct NodoHuff {
     char pal[25];
-    unsigned ocur;
+    int ocur;
     struct NodoHuff *izq, *der;
 };
 
 struct TSubArbol {
-    unsigned tamano;
-    unsigned capacidad;
+    int tamano;
+    int capacidad;
     struct NodoHuff **array;
 };
 
@@ -73,7 +73,7 @@ void iniciaLista(nodoProb lista[]) {
     }
 }
 
-void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
+/*void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
     int encontrado = 0, i = 0;
 
     while (!encontrado && (i < *tamLista)){
@@ -90,6 +90,22 @@ void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista){
     }
     else {
         lista[i].ocurrencia++;
+    }
+}*/
+
+void buscaYCuenta(nodoProb *lista, char *pal, int *tamLista) {
+    int i = 0;
+
+    while (strcmp(lista[i].pal, pal) != 0 && i < (*tamLista)) {
+        i++;
+    }
+
+    if (strcmp(lista[i].pal, pal) == 0) {
+        lista[i].ocurrencia++;
+    } else {
+        strcpy(lista[i].pal, pal);
+        lista[i].ocurrencia = 1;
+        (*tamLista)++;
     }
 }
 
@@ -127,17 +143,18 @@ void insertarEnDiccionario(nodoDiccionario *diccionario, int arr[], int n) {
     int i;
 
     for (i = 0; i < n; ++i) {
-        diccionario->cod[i] = '0' + arr[i];
+        diccionario->cod[i] =  '0' + arr[i];
     }
     diccionario->cod[n] = '\0';
 }
 
 
 // Crea un nodo del arbol de Huffman
-struct NodoHuff *creaNodo(char pal[], unsigned ocur) {
+struct NodoHuff *creaNodo(char pal[], int ocur) {
     struct NodoHuff *temp = (struct NodoHuff *)malloc(sizeof(struct NodoHuff));
 
-    temp->izq = temp->der = NULL;
+    temp->izq = NULL;
+    temp->der = NULL;
     strcpy(temp->pal, pal);
     temp->ocur = ocur;
 
@@ -145,7 +162,7 @@ struct NodoHuff *creaNodo(char pal[], unsigned ocur) {
 }
 
 // Crea la lista de sub Arboles
-struct TSubArbol *crearSubArboles(unsigned capacidad) {
+struct TSubArbol *crearSubArboles(int capacidad) {
     struct TSubArbol *subArboles = (struct TSubArbol *)malloc(sizeof(struct TSubArbol));
 
     subArboles->tamano = 0;
