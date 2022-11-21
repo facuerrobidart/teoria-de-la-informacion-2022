@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 
 #define ALT_MAXIMA 200
 
@@ -60,10 +61,13 @@ void huffman();
 void shannonFano();
 void buscaYCuenta(nodoProb lista[], char *pal, int *tamLista);
 void leerArchivo(nodoProb lista[], int *tamLista, int *contPalabras);
+void stats();
 
 int main() {
     int opcion = 0;
 
+    stats();
+    printf("-------------------------------------------------\n");
     while (opcion <= 0 || opcion >= 3) {
         printf("Ingrese una opcion: \n");
         printf("1 - Codificacion de Huffman\n");
@@ -743,4 +747,61 @@ void shannonFano() {
     }
 
     free(comprimido);
+}
+
+int calculaLongPalabra(char * palabra){
+    int i =0, longitud=0;
+    while(palabra[i] != '\0'){
+        longitud++;
+        i++;
+    }
+    return longitud;
+}
+
+
+float calculaLongMedia(nodoProb *lista, int tamLista){
+    float longMedia = 0;
+    for(int i=0;i<tamLista;i++){
+        longMedia+= lista[i].prob * ((float) (calculaLongPalabra(lista[i].pal)));
+    }
+    return longMedia;
+
+}
+
+float calculaEntropia(nodoProb *lista,int tamLista){
+    float entropia = 0;
+    for(int i=0;i<tamLista;i++){
+        entropia = entropia + lista[i].prob  * ( log(1/lista[i].prob)/ log(68) )  ;
+    }
+    return entropia;
+
+}
+
+float calculaRendimiento(float entropia,float longitudMedia){
+    return entropia/longitudMedia;
+}
+
+
+float calculaRedundancia(float rendimiento){
+    return 1-rendimiento;
+}
+
+void stats() {
+    nodoProb *lista = (nodoProb *) malloc(10000 * sizeof(nodoProb));
+    int tamLista = 0;
+    int contPalabras = 0;
+
+    leerArchivo(lista, &tamLista, &contPalabras);
+
+    float longMedia = calculaLongMedia(lista, tamLista);
+    float entropia = calculaEntropia(lista, tamLista);
+    float rendimiento = calculaRendimiento(entropia, longMedia);
+    float redundancia = calculaRedundancia(rendimiento);
+
+    printf("Longitud media: %f\n", longMedia);
+    printf("Entropia: %f\n", entropia);
+    printf("Rendimiento: %f\n", rendimiento);
+    printf("Redundancia: %f\n", redundancia);
+
+    free(lista);
 }
