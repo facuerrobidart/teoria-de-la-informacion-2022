@@ -734,12 +734,12 @@ void shannonFano() {
     }
 
     if (opcion == 1) {
-        uint8_t *reconstructedData = (uint8_t *) malloc(tamOriginal);
-        DescomprimirShannon(comprimido, reconstructedData, tamComprimido, tamOriginal);
+        uint8_t *reconstruccion = (uint8_t *) malloc(tamOriginal);
+        DescomprimirShannon(comprimido, reconstruccion, tamComprimido, tamOriginal);
 
         printf("Reconstruccion: \n");
-        printf("%s", reconstructedData);
-        free(reconstructedData);
+        printf("%s", reconstruccion);
+        free(reconstruccion);
     }
 
     free(comprimido);
