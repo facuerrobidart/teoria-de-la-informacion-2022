@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define ALT_MAXIMA 200
 
@@ -34,13 +35,26 @@ typedef struct nodoProb
     float prob;
 } nodoProb;
 
-typedef struct nodoShannon {
-    char pal[25];
-    float pro;
-    int arr[20];
-    int top;
-    int ocurrencia;
-} nodoShannon;
+
+typedef struct {
+    uint8_t* PunteroByte;
+    uint32_t PosicionBit;
+} BitStream;
+
+typedef struct {
+    uint32_t Palabra;
+    uint32_t Cont;
+    uint32_t Codigo;
+    uint32_t Bits;
+} Simbolo;
+
+typedef struct treeNode {
+    struct treeNode* Izq;
+    struct treeNode* Der;
+    int Palabra;
+} NodoArbolShannon;
+
+#define CANT_MAXIMA_NODOS 511
 
 void huffman();
 void shannonFano();
@@ -445,131 +459,288 @@ void huffman() {
     }
 }
 
+// Los proximos metodos son para la codificacion de Shannon fano
+void initBitStream(BitStream* stream, uint8_t* buffer) {
+    stream->PunteroByte = buffer;
+    stream->PosicionBit = 0;
+}
 
 
-void shannon(int l, int h, nodoShannon s[]) {
-    float pack1=0,pack2=0,diff1=0,diff2=0;
-    int i, k, j;
-    if((l+1)==h || l==h || l>h) {
-        if(l==h || l>h)
-            return;
-        s[h].arr[++(s[h].top)]=0;
-        s[l].arr[++(s[l].top)]=1;
+uint32_t leerBit(BitStream* stream) {
+    uint8_t* buffer = stream->PunteroByte;
+    uint32_t bit = stream->PosicionBit;
+    uint32_t x = (*buffer & (1 << (7 - bit))) ? 1 : 0;
+    bit = (bit + 1) & 7;
+
+    if (!bit) {
+        ++buffer;
+    }
+
+    stream->PosicionBit = bit;
+    stream->PunteroByte = buffer;
+
+    return x;
+}
+
+uint32_t leerByte(BitStream* stream)
+{
+    uint8_t* buffer = stream->PunteroByte;
+    uint32_t bit = stream->PosicionBit;
+    uint32_t x = (*buffer << bit) | (buffer[1] >> (8 - bit));
+    ++buffer;
+    stream->PunteroByte = buffer;
+
+    return x;
+}
+
+NodoArbolShannon *armarArbol(NodoArbolShannon* nodos, BitStream* stream, uint32_t* nro) {
+    NodoArbolShannon* esteNodo;
+
+    esteNodo = &nodos[*nro];
+    *nro = *nro + 1;
+
+    esteNodo->Palabra = -1;
+    esteNodo->Izq = (NodoArbolShannon*)0;
+    esteNodo->Der = (NodoArbolShannon*)0;
+
+    if (leerBit(stream)){
+        esteNodo->Palabra = leerByte(stream);
+        return esteNodo;
+    }
+
+    if (leerBit(stream)){
+        esteNodo->Izq = armarArbol(nodos, stream, nro);
+    }
+
+    if (leerBit(stream))
+    {
+        esteNodo->Der = armarArbol(nodos, stream, nro);
+    }
+
+    return esteNodo;
+}
+
+void DescomprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada, uint32_t tamanoSalida) {
+    NodoArbolShannon nodos[CANT_MAXIMA_NODOS], *raiz, *nodo;
+    BitStream stream;
+    uint32_t i, conteo;
+    uint8_t* buffer;
+
+    if (tamanoEntrada < 1) return;
+
+    initBitStream(&stream, entrada);
+
+    conteo = 0;
+    raiz = armarArbol(nodos, &stream, &conteo);
+    buffer = salida;
+
+    for (i = 0; i < tamanoSalida; ++i)
+    {
+        nodo = raiz;
+
+        while (nodo->Palabra < 0)
+        {
+            if (leerBit(&stream))
+                nodo = nodo->Der;
+            else
+                nodo = nodo->Izq;
+        }
+
+        *buffer++ = (uint8_t)nodo->Palabra;
+    }
+    *buffer++ = (uint8_t) "\0"; //agrego el caracter de fin de string
+}
+
+
+void escribirBits(BitStream* stream, uint32_t x, uint32_t bits)
+{
+    uint8_t* buffer = stream->PunteroByte;
+    uint32_t bit = stream->PosicionBit;
+    uint32_t mask = 1 << (bits - 1);
+
+    for (uint32_t count = 0; count < bits; ++count)
+    {
+        *buffer = (*buffer & (0xff ^ (1 << (7 - bit)))) + ((x & mask ? 1 : 0) << (7 - bit));
+        x <<= 1;
+        bit = (bit + 1) & 7;
+
+        if (!bit) {
+            ++buffer;
+        }
+    }
+
+    stream->PunteroByte = buffer;
+    stream->PosicionBit = bit;
+}
+
+void histograma(uint8_t* entrada, Simbolo* simbolo, uint32_t tamano) {
+    Simbolo temp;
+    int i, cambio;
+
+    for (i = 0; i < 256; ++i) {
+        simbolo[i].Palabra = i;
+        simbolo[i].Cont = 0;
+        simbolo[i].Codigo = 0;
+        simbolo[i].Bits = 0;
+    }
+
+    for (i = tamano; i; --i) {
+        simbolo[*entrada++].Cont++;
+    }
+
+    do {
+        cambio = 0;
+        for (i = 0; i < 255; ++i) {
+            if (simbolo[i].Cont < simbolo[i + 1].Cont) {
+                temp = simbolo[i];
+                simbolo[i] = simbolo[i + 1];
+                simbolo[i + 1] = temp;
+                cambio = 1;
+            }
+        }
+    } while (cambio);
+}
+
+void crearArbolShannon(Simbolo* simbolo, BitStream* stream, uint32_t codigo, uint32_t bits, uint32_t primero, uint32_t ultimo) {
+    uint32_t i, size, sizeA, sizeB, lastA, firstB;
+
+    if (primero == ultimo) {
+        escribirBits(stream, 1, 1);
+        escribirBits(stream, simbolo[primero].Palabra, 8);
+        simbolo[primero].Codigo = codigo;
+        simbolo[primero].Bits = bits;
         return;
     }
     else {
-        for(i=l;i <= h-1;i++)
-            pack1=pack1+s[i].pro;
-        pack2 = pack2 + s[h].pro;
-        diff1 = pack1 - pack2;
+        escribirBits(stream, 0, 1);
+    }
 
-        if(diff1< 0)
-            diff1=diff1*-1;
-        j=2;
+    size = 0;
 
-        while(j != h-l+1) {
-            k = h - j;
-            pack1 = pack2 = 0;
+    for (i = primero; i <= ultimo; ++i) {
+        size += simbolo[i].Cont;
+    }
 
-            for(i=l;i<=k;i++)
-                pack1 = pack1 + s[i].pro;
+    sizeA = 0;
 
-            for(i=h;i>k;i--)
-                pack2 = pack2 + s[i].pro;
+    for (i = primero; sizeA < ((size + 1) >> 1) && i < ultimo; ++i) {
+        sizeA += simbolo[i].Cont;
+    }
 
-            diff2 = pack1 - pack2;
+    if (sizeA > 0) {
+        escribirBits(stream, 1, 1);
 
-            if(diff2 < 0)
-                diff2 = diff2*-1;
+        lastA = i - 1;
 
-            if(diff2>=diff1)
-                break;
+        crearArbolShannon(simbolo, stream, (codigo << 1) + 0, bits + 1, primero, lastA);
+    }
+    else {
+        escribirBits(stream, 0, 1);
+    }
 
-            diff1 = diff2;
-            j++;
-        }
-        k++;
+    sizeB = size - sizeA;
 
-        for(i=l;i <= k;i++)
-            s[i].arr[++(s[i].top)]=1;
+    if (sizeB > 0) {
+        escribirBits(stream, 1, 1);
 
-        for(i=k+1;i <= h;i++)
-            s[i].arr[++(s[i].top)]=0;
+        firstB = i;
 
-        shannon(l,k,s);
-        shannon(k+1,h,s);
+        crearArbolShannon(simbolo, stream, (codigo << 1) + 1, bits + 1, firstB, ultimo);
+    }
+    else {
+        escribirBits(stream, 0, 1);
     }
 }
 
-void transformarANodoShannon(nodoProb lista[], nodoShannon s[], int tamLista) {
-    for (int i = 0; i < tamLista; i++) {
-        strcpy(s[i].pal, lista[i].pal);
-        s[i].pro = lista[i].prob;
-        s[i].top = -1;
-        s[i].ocurrencia = lista[i].ocurrencia;
-    }
-}
+int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada) {
+    Simbolo sym[256], temp;
+    BitStream stream;
+    uint32_t i, bytesTotales, cambio, simbolo, ultimoSimbolo;
 
-void ordenarShannon(nodoShannon s[], int tamLista) {
-    for (int i = 0; i < tamLista; i++) {
-        for (int j = 0; j < tamLista - 1; j++) {
-            if (s[j].pro < s[j + 1].pro) {
-                nodoShannon aux = s[j];
-                s[j] = s[j + 1];
-                s[j + 1] = aux;
+    if (tamanoEntrada < 1)
+        return 0;
+
+    initBitStream(&stream, salida);
+    histograma(entrada, sym, tamanoEntrada);
+
+    for (ultimoSimbolo = 255; sym[ultimoSimbolo].Cont == 0; --ultimoSimbolo);
+
+    if (ultimoSimbolo == 0)
+        ++ultimoSimbolo;
+
+    crearArbolShannon(sym, &stream, 0, 0, 0, ultimoSimbolo);
+
+    do {
+        cambio = 0;
+
+        for (i = 0; i < 255; ++i)
+        {
+            if (sym[i].Palabra > sym[i + 1].Palabra)
+            {
+                temp = sym[i];
+                sym[i] = sym[i + 1];
+                sym[i + 1] = temp;
+                cambio = 1;
             }
         }
+    } while (cambio);
+
+    for (i = 0; i < tamanoEntrada; ++i) {
+        simbolo = entrada[i];
+        escribirBits(&stream, sym[simbolo].Codigo, sym[simbolo].Bits);
     }
+
+    bytesTotales = (int)(stream.PunteroByte - salida);
+
+    if (stream.PosicionBit > 0) {
+        ++bytesTotales;
+    }
+
+    return bytesTotales;
 }
 
-
-void nodoShannonADiccionario(nodoShannon s[], nodoDiccionario diccionario[], int tamLista) {
-    for (int i = 0; i < tamLista; i++) {
-        strcpy(diccionario[i].pal, s[i].pal);
-        diccionario[i].ocurr = s[i].ocurrencia;
-        for (int j = 0; j <= s[i].top; j++) {
-            diccionario[i].cod[j] = s[i].arr[j] + '0';
-        }
-        diccionario[i].cod[s[i].top] = '\0';
-    }
+void generarCodificadoShannonFano(uint8_t* codificado) {
+    FILE * archCodificado = fopen("archCodificado.sha", "wb+");
+    fprintf(archCodificado, "%s", codificado);
+    fclose(archCodificado);
 }
 
 void shannonFano() {
-    nodoProb *lista = (nodoProb *) malloc(sizeof(nodoProb) * 10000);
-    nodoShannon *s = (nodoShannon *) malloc(sizeof(nodoShannon) * 10000);
-    int tamLista = 0;
-    int contPalabras = 0;
-    leerArchivo(lista, &tamLista, &contPalabras);
-    transformarANodoShannon(lista, s, tamLista);
+    FILE * arch = fopen("text.txt", "r");
+    char str[100000];
+    char buffer[20];
 
-    free(lista);
+    printf("Leyendo archivo...\n");
+    while (!feof(arch)) {
+        fgets(buffer, sizeof(buffer), arch);
+        strcat(str, buffer);
+    }
+    printf("Archivo leido, comprimiendo...\n");
+    uint8_t* original = (uint8_t*)str;
+    int tamOriginal = strlen(str);
+    uint8_t* comprimido = (uint8_t*)malloc(tamOriginal * (101 / 100) + 384);
 
-    ordenarShannon(s, tamLista);
-    shannon(0, tamLista - 1, s);
+    int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal);
+    printf("Tamano comprimido: %d\n", tamComprimido);
+    printf("Tamano sin comprimir: %d\n", tamOriginal);
+    printf("Exportando archivo...\n");
+    generarCodificadoShannonFano(comprimido);
 
-    nodoDiccionario *diccionario = (nodoDiccionario *) malloc(sizeof(nodoDiccionario) * tamLista);
-    nodoShannonADiccionario(s, diccionario, tamLista);
-    free(s);
+    int opcion = 3;
+    printf("Ingrese 1 para reconstruir el archivo, 0 para salir\n");
 
-    ordenaDiccionario(diccionario, tamLista);
-
-    int opcion = 5;
-    while (opcion != 0 && opcion != 1) {
-        printf("Presione 1 si desea mostrar el diccionario, 0 para seguir: ");
+    while (opcion != 1 && opcion != 0) {
         scanf("%d", &opcion);
     }
+
     if (opcion == 1) {
-        mostrarDiccionario(diccionario, tamLista);
+        uint8_t *reconstructedData = (uint8_t *) malloc(tamOriginal);
+        DescomprimirShannon(comprimido, reconstructedData, tamComprimido, tamOriginal);
+
+        printf("Reconstruccion: \n");
+        printf("%s", reconstructedData);
+        free(reconstructedData);
     }
 
-    generaArchCodificado(diccionario, tamLista, 0);
-
-    opcion = 5;
-    printf("Presione 1 si desea reconstruir el texto, 0 para salir: ");
-    while (opcion != 0 && opcion != 1) {
-        scanf("%d", &opcion);
-    }
-    if (opcion == 1) {
-        reconstruirTexto(0);
-    }
+    free(comprimido);
 }
