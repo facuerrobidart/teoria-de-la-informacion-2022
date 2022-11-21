@@ -698,7 +698,7 @@ void crearArbolShannon(Simbolo* simbolo, BitStream* stream, uint32_t codigo, uin
     }
 }
 
-int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada, float *longMedia) {
+int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada, float *longMedia, float *entropia) {
     Simbolo sym[256], temp;
     BitStream stream;
     uint32_t i, bytesTotales, cambio, simbolo, ultimoSimbolo;
@@ -737,16 +737,24 @@ int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada, 
     }
     bytesTotales = (int)(stream.PunteroByte - salida);
 
-
+    int cont = 0;
     uint32_t total = 0;
     for (int k = 0; k <= 255; k++) {
         uint32_t parcial = sym[k].Bits;
         if (parcial != 0) {
+            cont++;
             total += sym[k].Cont;
             (*longMedia) += parcial * sym[k].Cont;
         }
     }
     (*longMedia) = (*longMedia) / (float)total;
+
+    for (int j = 0; j <= 255; j++) {
+        float prob = sym[j].Cont / (float)total;
+        if (prob != 0) {
+            (*entropia) += prob * log2f(1/prob);
+        }
+    }
 
     if (stream.PosicionBit > 0) {
         ++bytesTotales;
@@ -777,20 +785,18 @@ void shannonFano() {
     uint8_t* comprimido = (uint8_t*)malloc(tamOriginal * (101 / 100) + 384);
 
     float longMedia = 0;
-    int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal, &longMedia);
+    float entropia = 0;
+    int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal, &longMedia, &entropia);
 
-    nodoProb *lista = (nodoProb*)malloc(sizeof(nodoProb)*5000);
-    int tamLista = 0, contPalabras = 0;
+
 
     printf("-------------------------------------------------\n");
     printf("Generando lista de probabilidades......\n");
 
-    leerArchivo(lista, &tamLista, &contPalabras);
-    printf("Entropia: %f\n", calculaEntropiaBin(lista, tamLista));
+    printf("Entropia: %f\n", entropia);
     printf("Longitud media: %f\n", longMedia);
-    printf("Rendimiento: %f\n", pow(calculaEntropiaBin(lista, tamLista) / longMedia, (-1)));
-    printf("Redundancia: %f\n", 1 - pow(calculaEntropiaBin(lista, tamLista) / longMedia, (-1)));
-    free(lista);
+    printf("Rendimiento: %f\n", entropia / longMedia);
+    printf("Redundancia: %f\n", 1  - (entropia / longMedia));
     printf("Tamano comprimido: %d bytes\n", tamComprimido);
     printf("Tamano sin comprimir: %d bytes\n", tamOriginal);
     printf("Tasa de compresion: %f\n", (float)tamOriginal / (float) tamComprimido);
