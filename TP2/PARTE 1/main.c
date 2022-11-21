@@ -720,9 +720,9 @@ int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada) 
     return bytesTotales;
 }
 
-void generarCodificadoShannonFano(uint8_t* codificado) {
+void generarCodificadoShannonFano(uint8_t* codificado, int tamano) {
     FILE * archCodificado = fopen("archCodificado.sha", "wb+");
-    fprintf(archCodificado, "%s", codificado);
+    fwrite(codificado, tamano, 1,archCodificado);
     fclose(archCodificado);
 }
 
@@ -746,7 +746,7 @@ void shannonFano() {
     printf("Tamano sin comprimir: %d bytes\n", tamOriginal);
     printf("Tasa de compresion: %f\n", (float)tamOriginal / (float) tamComprimido);
     printf("Exportando archivo...\n");
-    generarCodificadoShannonFano(comprimido);
+    generarCodificadoShannonFano(comprimido, tamComprimido);
 
     int opcion = 3;
     printf("Ingrese 1 para reconstruir el archivo, 0 para salir\n");
