@@ -9,6 +9,7 @@
 struct NodoHuff {
     char pal[25];
     int ocur;
+    float prob;
     struct NodoHuff *izq, *der;
 };
 
@@ -22,6 +23,7 @@ typedef struct nodoDiccionario {
     char pal[25];
     char cod[20];
     int ocurr;
+    float prob;
 } nodoDiccionario;
 
 typedef struct formatoDiccionario {
@@ -49,9 +51,9 @@ typedef struct {
     uint32_t Bits;
 } Simbolo;
 
-typedef struct treeNode {
-    struct treeNode* Izq;
-    struct treeNode* Der;
+typedef struct nodoArbolSha {
+    struct nodoArbolSha* Izq;
+    struct nodoArbolSha* Der;
     int Palabra;
 } NodoArbolShannon;
 
@@ -128,8 +130,6 @@ void buscaYCuenta(nodoProb *lista, char *pal, int *tamLista) {
 }
 
 void leerArchivo(nodoProb lista[], int *tamLista, int *contPalabras) {
-    printf("-------------------------------------------------\n");
-    printf("Leyendo archivo de entrada\n");
 
     FILE * arch = fopen("text.txt", "r");
     char pal[25];
@@ -168,13 +168,14 @@ void insertarEnDiccionario(nodoDiccionario *diccionario, int arr[], int n) {
 
 
 // Crea un nodo del arbol de Huffman
-struct NodoHuff *creaNodo(char pal[], int ocur) {
+struct NodoHuff *creaNodo(char pal[], int ocur, float prob) {
     struct NodoHuff *temp = (struct NodoHuff *)malloc(sizeof(struct NodoHuff));
 
     temp->izq = NULL;
     temp->der = NULL;
     strcpy(temp->pal, pal);
     temp->ocur = ocur;
+    temp->prob = prob;
 
     return temp;
 }
@@ -259,7 +260,7 @@ struct TSubArbol *creaSubArboles(nodoProb lista[], int tamLista) {
     struct TSubArbol *subArboles = crearSubArboles(tamLista);
 
     for (int i = 0; i < tamLista; ++i)
-        subArboles->array[i] = creaNodo(lista[i].pal, lista[i].ocurrencia);
+        subArboles->array[i] = creaNodo(lista[i].pal, lista[i].ocurrencia, lista[i].prob);
 
     subArboles->tamano = tamLista;
     construyeSubArboles(subArboles);
@@ -275,7 +276,7 @@ struct NodoHuff *construirArbolDeHuffman(nodoProb item[], int size) {
         izq = obtenerMinimo(subArboles);
         der = obtenerMinimo(subArboles);
 
-        tope = creaNodo("", izq->ocur + der->ocur);
+        tope = creaNodo("", izq->ocur + der->ocur, izq->prob + der->prob);
 
         tope->izq = izq;
         tope->der = der;
@@ -295,6 +296,7 @@ void escribirCodigosHuffman(struct NodoHuff *raiz, int arr[], int tope, nodoDicc
         strcpy(diccionario[*contador].pal, raiz->pal);
         insertarEnDiccionario(&diccionario[*contador], arr, tope);
         diccionario[*contador].ocurr = raiz->ocur;
+        diccionario[*contador].prob = raiz->prob;
         (*contador)++;
     }
     if (raiz->der) {
@@ -424,11 +426,30 @@ void reconstruirTexto(int esHuffman) {
     printf("\n-------------------------------------------------\n");
 }
 
+float longMediaHuffman(nodoDiccionario diccionario[], int tamDiccionario) {
+    float longMedia = 0;
+    for (int i = 0; i < tamDiccionario; i++) {
+        longMedia += diccionario[i].prob * strlen(diccionario[i].cod);
+    }
+    return longMedia;
+}
+
+float calculaEntropiaBin(nodoProb *lista, int tamDic) {
+    float entropia = 0;
+    for (int i = 0; i < tamDic; i++) {
+        entropia = entropia + lista[i].prob * (log(1 / lista[i].prob) / log(2));
+    }
+    return entropia;
+}
+
+
 
 void huffman() {
     nodoProb *lista = (nodoProb *) malloc(sizeof(nodoProb) * 10000);
     int tamLista = 0;
     int contPalabras = 0;
+    printf("-------------------------------------------------\n");
+    printf("Generando lista de probabilidades......\n");
     leerArchivo(lista, &tamLista, &contPalabras);
 
     struct NodoHuff *root = construirArbolDeHuffman(lista, tamLista);
@@ -442,6 +463,10 @@ void huffman() {
 
     int opcion = 5;
     printf("-------------------------------------------------\n");
+    printf("Entropia: %f\n", calculaEntropiaBin(lista, tamLista));
+    printf("Longitud media de codificacion de Huffman: %f\n", longMediaHuffman(diccionario, tamLista));
+    printf("Rendimiento de Huffman: %f\n", (calculaEntropiaBin(lista, tamLista) / longMediaHuffman(diccionario, tamLista)));
+    printf("Redundancia de Huffman: %f\n", (1 - (calculaEntropiaBin(lista, tamLista) / longMediaHuffman(diccionario, tamLista))));
     printf("Presione 1 para mostrar el diccionario, 0 para seguir: ");
     while (opcion != 0 && opcion != 1) {
         scanf("%d", &opcion);
@@ -673,7 +698,7 @@ void crearArbolShannon(Simbolo* simbolo, BitStream* stream, uint32_t codigo, uin
     }
 }
 
-int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada) {
+int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada, float *longMedia) {
     Simbolo sym[256], temp;
     BitStream stream;
     uint32_t i, bytesTotales, cambio, simbolo, ultimoSimbolo;
@@ -710,8 +735,18 @@ int ComprimirShannon(uint8_t* entrada, uint8_t* salida, uint32_t tamanoEntrada) 
         simbolo = entrada[i];
         escribirBits(&stream, sym[simbolo].Codigo, sym[simbolo].Bits);
     }
-
     bytesTotales = (int)(stream.PunteroByte - salida);
+
+
+    uint32_t total = 0;
+    for (int k = 0; k <= 255; k++) {
+        uint32_t parcial = sym[k].Bits;
+        if (parcial != 0) {
+            total += sym[k].Cont;
+            (*longMedia) += parcial * sym[k].Cont;
+        }
+    }
+    (*longMedia) = (*longMedia) / (float)total;
 
     if (stream.PosicionBit > 0) {
         ++bytesTotales;
@@ -741,7 +776,21 @@ void shannonFano() {
     int tamOriginal = strlen(str);
     uint8_t* comprimido = (uint8_t*)malloc(tamOriginal * (101 / 100) + 384);
 
-    int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal);
+    float longMedia = 0;
+    int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal, &longMedia);
+
+    nodoProb *lista = (nodoProb*)malloc(sizeof(nodoProb)*5000);
+    int tamLista = 0, contPalabras = 0;
+
+    printf("-------------------------------------------------\n");
+    printf("Generando lista de probabilidades......\n");
+
+    leerArchivo(lista, &tamLista, &contPalabras);
+    printf("Entropia: %f\n", calculaEntropiaBin(lista, tamLista));
+    printf("Longitud media: %f\n", longMedia);
+    printf("Rendimiento: %f\n", pow(calculaEntropiaBin(lista, tamLista) / longMedia, (-1)));
+    printf("Redundancia: %f\n", 1 - pow(calculaEntropiaBin(lista, tamLista) / longMedia, (-1)));
+    free(lista);
     printf("Tamano comprimido: %d bytes\n", tamComprimido);
     printf("Tamano sin comprimir: %d bytes\n", tamOriginal);
     printf("Tasa de compresion: %f\n", (float)tamOriginal / (float) tamComprimido);
@@ -755,14 +804,15 @@ void shannonFano() {
         scanf("%d", &opcion);
     }
 
+    uint8_t *reconstruccion = (uint8_t *) malloc(tamOriginal);
+    DescomprimirShannon(comprimido, reconstruccion, tamComprimido, tamOriginal);
+
     if (opcion == 1) {
-        uint8_t *reconstruccion = (uint8_t *) malloc(tamOriginal);
-        DescomprimirShannon(comprimido, reconstruccion, tamComprimido, tamOriginal);
 
         printf("Reconstruccion: \n");
         printf("%s", reconstruccion);
-        free(reconstruccion);
     }
+    free(reconstruccion);
 
     free(comprimido);
 }
