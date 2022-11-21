@@ -461,6 +461,23 @@ void huffman() {
     if (opcion == 1) {
         reconstruirTexto(1);
     }
+
+    FILE * archOriginal = fopen("text.txt", "r");
+    fseek(archOriginal, 0L, SEEK_END);
+    int tamOriginal = ftell(archOriginal);
+    fclose(archOriginal);
+
+    FILE * archCodificado = fopen("archCodificado.huf", "rb");
+    fseek(archCodificado, 0L, SEEK_END);
+    int tamCodificado = ftell(archCodificado);
+    fclose(archCodificado);
+
+    printf("-------------------------------------------------\n");
+    printf("Tamano original: %d bytes\n", tamOriginal);
+    printf("Tamano codificado: %d bytes\n", tamCodificado);
+    printf("Tasa de compresion: %f\n", (float) tamOriginal / (float) tamCodificado);
+    printf("-------------------------------------------------\n");
+
 }
 
 // Los proximos metodos son para la codificacion de Shannon fano
@@ -725,8 +742,9 @@ void shannonFano() {
     uint8_t* comprimido = (uint8_t*)malloc(tamOriginal * (101 / 100) + 384);
 
     int tamComprimido = ComprimirShannon(original, comprimido, tamOriginal);
-    printf("Tamano comprimido: %d\n", tamComprimido);
-    printf("Tamano sin comprimir: %d\n", tamOriginal);
+    printf("Tamano comprimido: %d bytes\n", tamComprimido);
+    printf("Tamano sin comprimir: %d bytes\n", tamOriginal);
+    printf("Tasa de compresion: %f\n", (float)tamOriginal / (float) tamComprimido);
     printf("Exportando archivo...\n");
     generarCodificadoShannonFano(comprimido);
 
